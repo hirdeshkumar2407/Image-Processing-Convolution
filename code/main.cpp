@@ -124,7 +124,7 @@ MatrixXd task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix, 
     int image_size = image_matrix.size();
 
     // Treat the image as a 1D vector
-    VectorXd flattened_image = Map<VectorXd>(image_matrix.transpose().data(), image_size);
+    VectorXd flattened_image = Map<VectorXd>(image_matrix.data(), image_size);
 
     // A1 with dimensions (width * height) x (width * height)
     SparseMatrix<double> A1(image_size, image_size);
@@ -135,17 +135,19 @@ MatrixXd task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix, 
         for (int j = 0; j < width; ++j) {
             int pixel_index = i * width + j;  // Index for the current pixel
 
-            // Apply the 3x3 kernel to each pixel and its neighbors
+            // Apply the kernel to each pixel and its neighbors
             for (int ki = -1; ki <= 1; ++ki) {
                 for (int kj = -1; kj <= 1; ++kj) {
+                    // Calculate the index of the neighboring pixel
                     int next_row = i + ki;
                     int next_col = j + kj;
 
-                    // Check if the next_row and next_col are within the valid range
+                    // Ensure we stay within the image bounds
                     if (next_row >= 0 && next_row < height && next_col >= 0 && next_col < width) {
-                        int next_index = next_row * width + next_col;
+                        int next_index = next_row * width + next_col;  // corrected to width
+
+                        // Add the kernel value to the corresponding entry in A1
                         double kernel_value = smoothing_matrix(ki + 1, kj + 1);
-                        // Add the valid triplet
                         nonzero_values.push_back(Triplet<double>(pixel_index, next_index, kernel_value));
                     }
                 }
@@ -170,7 +172,6 @@ MatrixXd task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix, 
 
     return result;
 }
-
 
 // Main function
 int main(int argc, char* argv[]) {

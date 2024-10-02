@@ -92,19 +92,19 @@ MatrixXd task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix, 
 
   vector<Triplet<double>> nonzero_values;
 
-  for (int i = 1; i < width - 1; ++i) {
-        for (int j = 1; j < height - 1; ++j) {
-            int pixel_index = i * height + j;  // index for the current pixel
+  for (int i = 0; i < height; ++i) {
+        for (int j = 0; j < width; ++j) {
+            int pixel_index = i * width + j;  // index for the current pixel
 
             // Apply the 3x3 kernel to each pixel and its neighbors
             for (int ki = -1; ki <= 1; ++ki) {
                 for (int kj = -1; kj <= 1; ++kj) {
                     int next_row = i + ki;
                     int next_col = j + kj;
-                    int next_index = next_row * height + next_col;
+                    int next_index = next_row * width + next_col;
 
                     // Add the kernel value to the corresponding entry in A1
-                    float kernel_value = smoothing_matrix(ki + 1, kj + 1);
+                    double kernel_value = smoothing_matrix(ki + 1, kj + 1);
                     nonzero_values.push_back(Triplet<double>(pixel_index, next_index, kernel_value));
                 }
             }
@@ -115,7 +115,10 @@ MatrixXd task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix, 
   cout << "Number of non-zero entries in A1: " << A1.nonZeros() << endl;
 
   VectorXd smoothed_image = A1 * flattened_image;
-  MatrixXd result = Map<MatrixXd>(smoothed_image.data(), width, height);
+  MatrixXd result = Map<MatrixXd>(smoothed_image.data(), height, width);
+  
+  result = result.unaryExpr( { return min(255.0, max(0.0, val)); });
+
   cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
   return result;
 }

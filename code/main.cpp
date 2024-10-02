@@ -7,6 +7,7 @@
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+#include "filters.h"
 
 using namespace Eigen;
 using namespace std;
@@ -23,6 +24,8 @@ tuple<int, int, int, unsigned char*> task1_getImageDimensions(char* input_image_
     cout << "Image loaded: " << width << "x" << height << " with " << channels << " channels." << endl;
     return make_tuple(width, height, channels, image_data);
 }
+
+//export image in .png format
 void exportimagenotnormalise(unsigned char* image_data, const string& image_name, const string& ext, const MatrixXd& image, int width, int height) {
     // Do not free image_data here, only free it after exporting the image
     // stbi_image_free(image_data);
@@ -67,6 +70,14 @@ VectorXd task3(const MatrixXd& image_matrix) {
     //image_matrix.size() gives the total number of elements in the matrix (i.e., rows * cols).
     //Map<VectorXd> constructs a VectorXd that views the matrix's data as a 1D vector.
     return flattened_image;
+}
+
+/*
+ smoothing kernel Hav2 as a matrix vector multiplication 
+ between a matrix A1 having size mn mn and the image vector.
+*/
+void task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix){
+
 }
 
 // Main function
@@ -115,10 +126,20 @@ int main(int argc, char* argv[]) {
  cout << "w mn:" << w.size()<< endl; //size of the vector w
  cout << "Euclidean norm of v norm: " << v.norm() << endl; //Euclidean norm of vector v
 
-    return 0;
 
-    // Free the image data after use
-    stbi_image_free(image_data);
+ // task4
+  Matrix3d Hav2 = getHav2();
 
-    return 0;
+  Matrix3d Hsh2 = getHsh2();
+
+  VectorXd flattened_image = Eigen::Map<Eigen::VectorXd>(image_matrix.data(), image_matrix.size());
+  cout << "Hsh2 Matrix:\n" << Hsh2 << std::endl;
+
+
+  //return 0;
+
+  // Free the image data after use
+  stbi_image_free(image_data);
+
+  return 0;
 }

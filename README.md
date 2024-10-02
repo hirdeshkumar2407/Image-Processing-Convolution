@@ -5,8 +5,18 @@
 ### Goal: 
 Apply image filters and find the approximate solution of linear system to process a greyscale image
 
+### Make sure you have the modules, otherwise run these commands
+    ```
+        source /u/sw/etc/bash.bashrc
+        module load gcc-glibc/11.2.0
+        module load eigen tbb lis
+    ```    
 
-
+### Compiling and running commands examples
+    ```
+        g++ -I ${mkEigenInc} main.cpp filters.cpp -o tasks
+        ./tasks Albert_Einstein-256px.jpg 
+    ```
 
 ## Contributors
 [Hirdesh Kumar](https://github.com/hirdeshkumar2407)

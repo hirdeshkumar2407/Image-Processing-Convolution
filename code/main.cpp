@@ -1,4 +1,5 @@
 #include <Eigen/Dense>
+#include <Eigen/Sparse>
 #include <iostream>
 #include <cstdlib>
 #include <tuple>
@@ -41,7 +42,7 @@ void exportimagenotnormalise(unsigned char* image_data, const string& image_name
     // Construct the output file name
     string output_image_path = image_name + "." + ext;
      
-    cout << "Task 2- Noisy Image made!" << output_image_path << endl;
+    cout << "\nimage saved: " << output_image_path << endl;
     // Save the image as a PNG file
     if (stbi_write_png(output_image_path.c_str(), width, height, 1, transform_image.data(), width) == 0) {
         std::cerr << "Error: Could not save grayscale image" << std::endl;
@@ -74,10 +75,47 @@ VectorXd task3(const MatrixXd& image_matrix) {
 
 /*
  smoothing kernel Hav2 as a matrix vector multiplication 
- between a matrix A1 having size mn mn and the image vector.
+ between a matrix A1 having size mnXmn and the image vector.
 */
-void task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix){
+MatrixXd task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix, int width, int height){
 
+  cout << "\n--------TASK 4----------\n";
+  int image_size = image_matrix.size();
+
+  //  sparse matrix multiplication requires the image to be treated as a 1D vector
+  VectorXd flattened_image = Map<VectorXd>(image_matrix.data(), image_size);
+
+  // A1 with dimensions (256x341) X (256x341)
+  SparseMatrix<double> A1(image_size, image_size);
+
+  vector<Triplet<double>> nonzero_values;
+
+  for (int i = 1; i < width - 1; ++i) {
+        for (int j = 1; j < height - 1; ++j) {
+            int pixel_index = i * height + j;  // index for the current pixel
+
+            // Apply the 3x3 kernel to each pixel and its neighbors
+            for (int ki = -1; ki <= 1; ++ki) {
+                for (int kj = -1; kj <= 1; ++kj) {
+                    int next_row = i + ki;
+                    int next_col = j + kj;
+                    int next_index = next_row * height + next_col;
+
+                    // Add the kernel value to the corresponding entry in A1
+                    float kernel_value = smoothing_matrix(ki + 1, kj + 1);
+                    nonzero_values.push_back(Triplet<double>(pixel_index, next_index, kernel_value));
+                }
+            }
+        }
+  }
+
+  A1.setFromTriplets(nonzero_values.begin(), nonzero_values.end());
+  cout << "Number of non-zero entries in A1: " << A1.nonZeros() << endl;
+
+  VectorXd smoothed_image = A1 * flattened_image;
+  MatrixXd result = Map<MatrixXd>(smoothed_image.data(), width, height);
+  cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
+  return result;
 }
 
 // Main function
@@ -111,10 +149,9 @@ int main(int argc, char* argv[]) {
    // cout << "Image before noise addition: " << endl << image_matrix << endl;
    // cout << "Image after noise addition: " << endl << t2_image_matrix << endl;
 
- 
-
     exportimagenotnormalise(image_data, "noisy_image", "png", t2_image_matrix, width, height);
-       // Task 3 Convert the image matrix to a vector
+
+    // Task 3 Convert the image matrix to a vector
     VectorXd v= task3(image_matrix); //Original image as a vector
     VectorXd w= task3(t2_image_matrix); //Noisy image as a vector
  //cout << "Original image as a vector: " << endl << v << endl;
@@ -128,9 +165,9 @@ int main(int argc, char* argv[]) {
 
 
  // task4
-  Matrix3d Hav2 = getHav2();
-
-  VectorXd flattened_image = Eigen::Map<Eigen::VectorXd>(image_matrix.data(), image_matrix.size());
+    Matrix3d Hav2 = getHav2();
+    MatrixXd smoothed_image = task4_imageSmoothing(image_matrix, Hav2, width, height);
+    exportimagenotnormalise(image_data, "smoothed_image", "png", smoothed_image, width, height);
 
   // Free the image data after use
   stbi_image_free(image_data);

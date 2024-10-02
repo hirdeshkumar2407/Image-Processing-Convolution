@@ -8,8 +8,8 @@
 using namespace Eigen;
 using namespace std;
 
-MatrixXd getHav1();
-MatrixXd getHav2();
-MatrixXd getHsh2();
+Matrix3d getHav1();
+Matrix3d getHav2();
+Matrix3d getHsh2();
 
 #endif

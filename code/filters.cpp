@@ -7,8 +7,8 @@
 using namespace Eigen;
 using namespace std;
 
-MatrixXd getHav1() {
-    MatrixXd Hav1;
+Matrix3d getHav1() {
+    Matrix3d Hav1;
   Hav1 << 0, 1, 0,
           1, 4, 1,
           0, 1, 0;
@@ -17,8 +17,8 @@ MatrixXd getHav1() {
 }
 
 // Define the function to return Hav2
-MatrixXd getHav2() {
-    MatrixXd Hav2;
+Matrix3d getHav2() {
+    Matrix3d Hav2;
   Hav2 << 1, 1, 1,
           1, 1, 1,
           1, 1, 1;
@@ -26,8 +26,8 @@ MatrixXd getHav2() {
     return Hav2;
 }
 
-MatrixXd getHsh2(){
-    MatrixXd Hsh2;
+Matrix3d getHsh2(){
+    Matrix3d Hsh2;
     Hsh2 <<  0, -3,  0,
             -1,  9, -3,
              0, -1,  0;

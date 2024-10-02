@@ -119,59 +119,64 @@ for (int i = 1; i < height - 1; ++i) {
 }
 */
 
-MatrixXd task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix, int width, int height) {
-    cout << "\n--------TASK 4----------\n";
-    int image_size = image_matrix.size();
+MatrixXd task4_imageSmoothing(const MatrixXd& image_matrix, const Matrix3d& smoothing_matrix) {
+    int height = image_matrix.rows();
+    int width = image_matrix.cols();
+    int image_size = height * width;
 
-    // Treat the image as a 1D vector
-    VectorXd flattened_image = Map<VectorXd>(image_matrix.data(), image_size);
+    if (smoothing_matrix.rows() != 3 || smoothing_matrix.cols() != 3) {
+        cerr << "Error: Smoothing matrix must be 3x3." << endl;
+        return MatrixXd();  // Return empty matrix on error
+    }
 
-    // A1 with dimensions (width * height) x (width * height)
-    SparseMatrix<double> A1(image_size, image_size);
+    // Result matrix to hold the smoothed image
+    MatrixXd result = MatrixXd::Zero(height, width);
+
+    // Vector to store the non-zero values of the sparse matrix
     vector<Triplet<double>> nonzero_values;
 
-    // Populate the A1 matrix using the kernel
+    // Iterate over each pixel in the image
     for (int i = 0; i < height; ++i) {
         for (int j = 0; j < width; ++j) {
-            int pixel_index = i * width + j;  // Index for the current pixel
-
             // Apply the kernel to each pixel and its neighbors
+            double sum = 0.0;
             for (int ki = -1; ki <= 1; ++ki) {
                 for (int kj = -1; kj <= 1; ++kj) {
-                    // Calculate the index of the neighboring pixel
+                    // Calculate the coordinates of the neighboring pixel
                     int next_row = i + ki;
                     int next_col = j + kj;
 
                     // Ensure we stay within the image bounds
                     if (next_row >= 0 && next_row < height && next_col >= 0 && next_col < width) {
-                        int next_index = next_row * width + next_col;  // corrected to width
-
-                        // Add the kernel value to the corresponding entry in A1
-                        double kernel_value = smoothing_matrix(ki + 1, kj + 1);
-                        nonzero_values.push_back(Triplet<double>(pixel_index, next_index, kernel_value));
+                        // Multiply the image pixel with the kernel value
+                        sum += image_matrix(next_row, next_col) * smoothing_matrix(ki + 1, kj + 1);
                     }
                 }
+            }
+            // Store the computed value in the result matrix
+            result(i, j) = sum;
+
+            // Add the non-zero value to the sparse matrix A1
+            if (sum != 0) {
+                nonzero_values.push_back(Triplet<double>(i * width + j, 0, sum)); // Assuming a single output vector for A1
             }
         }
     }
 
-    // Set the values in the sparse matrix
+    // Create the sparse matrix A1
+    SparseMatrix<double> A1(image_size, image_size);
     A1.setFromTriplets(nonzero_values.begin(), nonzero_values.end());
 
     // Report the number of non-zero entries in A1
     cout << "Number of non-zero entries in A1: " << A1.nonZeros() << endl;
 
-    // Perform convolution (smoothing)
-    VectorXd smoothed_image = A1 * flattened_image;
-
-    // Reshape the result back into a 2D matrix
-    MatrixXd result = Map<MatrixXd>(smoothed_image.data(), height, width);
-
+    // Print the size and the result
     cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
-    cout << "result matrix:\n" << result << endl;
+    //cout << "result matrix:\n" << result << endl;
 
     return result;
 }
+
 
 // Main function
 int main(int argc, char* argv[]) {
@@ -221,8 +226,8 @@ int main(int argc, char* argv[]) {
 
 
  // task4
-    MatrixXd Hav2 = getHav2();
-    MatrixXd smoothed_image = task4_imageSmoothing(image_matrix, Hav2, width, height);
+    Matrix3d Hav2 = getHav2();
+    MatrixXd smoothed_image = task4_imageSmoothing(image_matrix, Hav2);
     exportimagenotnormalise(image_data, "smoothed_image", "png", smoothed_image, width, height);
 
   // Free the image data after use

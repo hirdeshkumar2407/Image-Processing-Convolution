@@ -9,8 +9,8 @@ using namespace Eigen;
 using namespace std;
 
 // Function to return the Hav2 matrix
-Matrix3d getHav2();
+MatrixXd getHav2();
 
-Matrix3d getHsh2();
+MatrixXd getHsh2();
 
 #endif

@@ -79,7 +79,7 @@ VectorXd task3(const MatrixXd& image_matrix) {
  smoothing kernel Hav2 as a matrix vector multiplication 
  between a matrix A1 having size mnXmn and the image vector.
 */
-MatrixXd task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix, int width, int height){
+/*MatrixXd task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix, int width, int height){
 
   cout << "\n--------TASK 4----------\n";
   int image_size = image_matrix.size();
@@ -92,36 +92,85 @@ MatrixXd task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix, 
 
   vector<Triplet<double>> nonzero_values;
 
-  for (int i = 0; i < height; ++i) {
+MatrixXd result(height, width);
+
+// Iterate over each pixel except for the boundary pixels
+for (int i = 1; i < height - 1; ++i) {
+    for (int j = 1; j < width - 1; ++j) {
+        // Apply the kernel to the 3x3 region centered on pixel (i, j)
+        double sum = 0.0;
+        for (int ki = -1; ki <= 1; ++ki) {
+            for (int kj = -1; kj <= 1; ++kj) {
+                sum += image_matrix(i + ki, j + kj) * smoothing_matrix(ki + 1, kj + 1);
+            }
+        }
+        result(i, j) = sum;
+    }
+}
+  //A1.setFromTriplets(nonzero_values.begin(), nonzero_values.end());
+  //cout << "Number of non-zero entries in A1: " << A1.nonZeros() << endl;
+
+  //VectorXd smoothed_image = A1 * flattened_image;
+  //MatrixXd result = Map<MatrixXd>(smoothed_image.data(), height, width);
+
+  cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
+  cout << "result matrix:" << result << endl;
+  return result;
+}
+*/
+
+MatrixXd task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix, int width, int height) {
+    cout << "\n--------TASK 4----------\n";
+    int image_size = image_matrix.size();
+
+    // Treat the image as a 1D vector
+    VectorXd flattened_image = Map<VectorXd>(image_matrix.transpose().data(), image_size);
+
+    // A1 with dimensions (width * height) x (width * height)
+    SparseMatrix<double> A1(image_size, image_size);
+    vector<Triplet<double>> nonzero_values;
+
+    // Populate the A1 matrix using the kernel
+    for (int i = 0; i < height; ++i) {
         for (int j = 0; j < width; ++j) {
-            int pixel_index = i * width + j;  // index for the current pixel
+            int pixel_index = i * width + j;  // Index for the current pixel
 
             // Apply the 3x3 kernel to each pixel and its neighbors
             for (int ki = -1; ki <= 1; ++ki) {
                 for (int kj = -1; kj <= 1; ++kj) {
                     int next_row = i + ki;
                     int next_col = j + kj;
-                    int next_index = next_row * width + next_col;
 
-                    // Add the kernel value to the corresponding entry in A1
-                    double kernel_value = smoothing_matrix(ki + 1, kj + 1);
-                    nonzero_values.push_back(Triplet<double>(pixel_index, next_index, kernel_value));
+                    // Check if the next_row and next_col are within the valid range
+                    if (next_row >= 0 && next_row < height && next_col >= 0 && next_col < width) {
+                        int next_index = next_row * width + next_col;
+                        double kernel_value = smoothing_matrix(ki + 1, kj + 1);
+                        // Add the valid triplet
+                        nonzero_values.push_back(Triplet<double>(pixel_index, next_index, kernel_value));
+                    }
                 }
             }
         }
-  }
+    }
 
-  A1.setFromTriplets(nonzero_values.begin(), nonzero_values.end());
-  cout << "Number of non-zero entries in A1: " << A1.nonZeros() << endl;
+    // Set the values in the sparse matrix
+    A1.setFromTriplets(nonzero_values.begin(), nonzero_values.end());
 
-  VectorXd smoothed_image = A1 * flattened_image;
-  MatrixXd result = Map<MatrixXd>(smoothed_image.data(), height, width);
-  
-  result = result.unaryExpr( { return min(255.0, max(0.0, val)); });
+    // Report the number of non-zero entries in A1
+    cout << "Number of non-zero entries in A1: " << A1.nonZeros() << endl;
 
-  cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
-  return result;
+    // Perform convolution (smoothing)
+    VectorXd smoothed_image = A1 * flattened_image;
+
+    // Reshape the result back into a 2D matrix
+    MatrixXd result = Map<MatrixXd>(smoothed_image.data(), height, width);
+
+    cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
+    cout << "result matrix:\n" << result << endl;
+
+    return result;
 }
+
 
 // Main function
 int main(int argc, char* argv[]) {
@@ -171,7 +220,7 @@ int main(int argc, char* argv[]) {
 
 
  // task4
-    Matrix3d Hav2 = getHav2();
+    MatrixXd Hav2 = getHav2();
     MatrixXd smoothed_image = task4_imageSmoothing(image_matrix, Hav2, width, height);
     exportimagenotnormalise(image_data, "smoothed_image", "png", smoothed_image, width, height);
 

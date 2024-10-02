@@ -130,13 +130,7 @@ int main(int argc, char* argv[]) {
  // task4
   Matrix3d Hav2 = getHav2();
 
-  Matrix3d Hsh2 = getHsh2();
-
   VectorXd flattened_image = Eigen::Map<Eigen::VectorXd>(image_matrix.data(), image_matrix.size());
-  cout << "Hsh2 Matrix:\n" << Hsh2 << std::endl;
-
-
-  //return 0;
 
   // Free the image data after use
   stbi_image_free(image_data);

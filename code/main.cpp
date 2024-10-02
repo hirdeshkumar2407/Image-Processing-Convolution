@@ -4,10 +4,10 @@
 #include <tuple>
 // from https://github.com/nothings/stb/tree/master
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+#include "headers/stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
-#include "filters.h"
+#include "headers/stb_image_write.h"
+#include "headers/filters.h"
 
 using namespace Eigen;
 using namespace std;

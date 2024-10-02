@@ -42,7 +42,7 @@ void exportimagenotnormalise(unsigned char* image_data, const string& image_name
     // Construct the output file name
     string output_image_path = "results/" + image_name + "." + ext;
      
-    cout << "\nimage saved: " << output_image_path << endl;
+    cout << "image saved: " << output_image_path << endl;
     // Save the image as a PNG file
     if (stbi_write_png(output_image_path.c_str(), width, height, 1, transform_image.data(), width) == 0) {
         std::cerr << "Error: Could not save grayscale image" << std::endl;
@@ -54,6 +54,7 @@ void exportimagenotnormalise(unsigned char* image_data, const string& image_name
 
 // Function to add noise to the image
 MatrixXd task2(int width, int height, MatrixXd image_matrix) {
+    cout << "\n--------TASK 2----------\n";
     MatrixXd noise(height, width);
     noise.setRandom();  // Fill the matrix with random values between -1 and 1
     noise = noise * 50.0;  // Scale the noise to be between -50 and 50
@@ -64,6 +65,7 @@ MatrixXd task2(int width, int height, MatrixXd image_matrix) {
 
 // Function to convert MatrixXd to a VectorXd
 VectorXd task3(const MatrixXd& image_matrix) {
+    cout << "\n--------TASK 3----------\n";
    VectorXd flattened_image =  Map<const VectorXd>(image_matrix.data(), image_matrix.size()); 
    // Use Map<const VectorXd> instead of Map<VectorXd> because image_matrix.data() returns a const double* (read-only pointer).
     //Eigen allows you to use the Map class to reinterpret the matrix's underlying data as a vector without explicitly copying the data.
@@ -143,6 +145,7 @@ int main(int argc, char* argv[]) {
 
    
     // Add noise to the image matrix
+
     MatrixXd t2_image_matrix = task2(width, height, image_matrix);
 
     // Task 2 Output the image matrices

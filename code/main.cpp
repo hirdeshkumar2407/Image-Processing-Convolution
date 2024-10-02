@@ -40,7 +40,7 @@ void exportimagenotnormalise(unsigned char* image_data, const string& image_name
     });
 
     // Construct the output file name
-    string output_image_path = image_name + "." + ext;
+    string output_image_path = "results/" + image_name + "." + ext;
      
     cout << "\nimage saved: " << output_image_path << endl;
     // Save the image as a PNG file

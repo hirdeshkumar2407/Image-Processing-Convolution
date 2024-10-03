@@ -77,7 +77,7 @@ VectorXd convertMatrixToVector(const MatrixXd &image_matrix)
 
 SparseMatrix<double> populateSparseMatrix(int image_size, Matrix3d smoothing_matrix, int width, int height)
 {
-    SparseMatrix<double> A1(image_size, image_size);
+    SparseMatrix<double> sp_matrix(image_size, image_size);
 
     vector<Triplet<double>> nonzero_values;
 
@@ -107,8 +107,8 @@ SparseMatrix<double> populateSparseMatrix(int image_size, Matrix3d smoothing_mat
         }
     }
 
-    A1.setFromTriplets(nonzero_values.begin(), nonzero_values.end());
-    return A1;
+    sp_matrix.setFromTriplets(nonzero_values.begin(), nonzero_values.end());
+    return sp_matrix;
 }
 
 /*
@@ -129,7 +129,7 @@ pair<MatrixXd, SparseMatrix<double>> task4_imageSmoothing(MatrixXd image_matrix,
     VectorXd smoothed_image = A1 * flattened_image;
     MatrixXd result = Map<MatrixXd>(smoothed_image.data(), height, width);
 
-    cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
+    //cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
     return make_pair(result, A1);
 }
 
@@ -188,7 +188,7 @@ int main(int argc, char *argv[])
     // -- Task 5 --
     SparseMatrix<double> A1 = result.second;
     MatrixXd resulmat = task5_matrixvectorMultiplication(A1, w, width, height);
-    exportimagenotnormalise(image_data, "smoothed_noisy_image", "png", resulmat, width, height);
+    exportimagenotnormalise(image_data, "smoothed_noisy", "png", resulmat, width, height);
 
     // Free the image data after use
     stbi_image_free(image_data);

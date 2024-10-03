@@ -111,6 +111,13 @@ SparseMatrix<double> populateSparseMatrix(int image_size, Matrix3d smoothing_mat
     return sp_matrix;
 }
 
+MatrixXd spMatrixVectorMultiplication(const SparseMatrix<double> &sp_matrix, const VectorXd &vec, int width, int height)
+{
+    VectorXd result = sp_matrix * vec;
+    MatrixXd resultmat = Map<MatrixXd>(result.data(), height, width);
+    return resultmat;
+}
+
 /*
  smoothing kernel Hav2 as a matrix vector multiplication
  between a matrix A1 having size mnXmn and the image vector.
@@ -126,19 +133,9 @@ pair<MatrixXd, SparseMatrix<double>> task4_imageSmoothing(MatrixXd image_matrix,
     SparseMatrix<double> A1 = populateSparseMatrix(image_size, smoothing_matrix, width, height);
     cout << "Number of non-zero entries in A1: " << A1.nonZeros() << endl;
 
-    VectorXd smoothed_image = A1 * flattened_image;
-    MatrixXd result = Map<MatrixXd>(smoothed_image.data(), height, width);
-
+    MatrixXd result = spMatrixVectorMultiplication(A1, flattened_image, width, height);
     //cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
     return make_pair(result, A1);
-}
-
-MatrixXd task5_matrixvectorMultiplication(const SparseMatrix<double> &A1, const VectorXd &w, int width, int height)
-{
-    cout << "\n--------TASK 5----------\n";
-    VectorXd result = A1 * w;
-    MatrixXd resultmat = Map<MatrixXd>(result.data(), height, width);
-    return resultmat;
 }
 
 // Main function
@@ -186,8 +183,9 @@ int main(int argc, char *argv[])
     //exportimagenotnormalise(image_data, "smoothed_image", "png", result.first, width, height);
 
     // -- Task 5 --
+    cout << "\n--------TASK 5----------\n";
     SparseMatrix<double> A1 = result.second;
-    MatrixXd resulmat = task5_matrixvectorMultiplication(A1, w, width, height);
+    MatrixXd resulmat = spMatrixVectorMultiplication(A1, w, width, height);
     exportimagenotnormalise(image_data, "smoothed_noisy", "png", resulmat, width, height);
 
     // Free the image data after use

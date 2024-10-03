@@ -1,6 +1,5 @@
 #ifndef filters_H
 #define filters_H
-
 #include <Eigen/Dense>
 #include <iostream>
 #include <cstdlib>

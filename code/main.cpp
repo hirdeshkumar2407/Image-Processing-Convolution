@@ -79,12 +79,16 @@ VectorXd task3(const MatrixXd& image_matrix) {
  smoothing kernel Hav2 as a matrix vector multiplication 
  between a matrix A1 having size mnXmn and the image vector.
 */
-SparseMatrix<double> task4_imageSmoothing(MatrixXd image_matrix, Matrix3d smoothing_matrix, int width, int height) {
+
+ 
+
+
+SparseMatrix<double> task4_imageSmoothing(MatrixXd image_matrix, Matrix3d smoothing_matrix, int width, int height, unsigned char* image_data) {
 cout << "\n--------TASK 4----------\n";
   int image_size = image_matrix.size();
-
+    printf("image size: %i\n", image_size);
   //  sparse matrix multiplication requires the image to be treated as a 1D vector
- VectorXd flattened_image = Map<VectorXd>(image_matrix.transpose().data(), image_size);
+ VectorXd flattened_image = Map<VectorXd>(image_matrix.data(), image_size);
 
 
   // A1 with dimensions (256x341) X (256x341)
@@ -92,21 +96,26 @@ cout << "\n--------TASK 4----------\n";
 
   vector<Triplet<double>> nonzero_values;
 
-  for (int i = 1; i < height - 1; ++i) {
-        for (int j = 1; j < width - 1; ++j) {
-            int pixel_index = i * width + j;  // index for the current pixel
-
+  for (int i = 0; i < width; ++i) {
+        for (int j = 0; j < height ; ++j) {
+            int pixel_index = i * height + j;  // index for the current pixel
+            //nonzero_values.push_back(Triplet<double>(pixel_index, pixel_index, 1.));
+            //continue;
             // Apply the 3x3 kernel to each pixel and its neighbors
-            for (int ki = -1; ki <= 1; ++ki) {
-                for (int kj = -1; kj <= 1; ++kj) {
+            for (int ki = -1; ki <= 1; ki++) { 
+                for (int kj = -1; kj <= 1; kj++) {
                     int next_row = i + ki;
-                    int next_col = j + kj;
-                    int next_index = next_row * width + next_col;
+                    int  next_col = j + kj;
+                    int next_index = next_row * height + next_col;
+                    if(next_row <0 || next_col < 0 || next_row >= width || next_col >= height)  {
+                        continue;
+                    }
+                    if(i < 2)printf("col: %i, row: %i\n", pixel_index, next_index);
 
                     // Add the kernel value to the corresponding entry in A1
                     double kernel_value = smoothing_matrix(ki + 1, kj + 1);
                     nonzero_values.push_back(Triplet<double>(pixel_index, next_index, kernel_value));
-                    
+                   // break;
 
                 }
             }
@@ -129,6 +138,9 @@ cout << "\n--------TASK 4----------\n";
     }*/
   VectorXd smoothed_image = A1 * flattened_image;
   MatrixXd result = Map<MatrixXd>(smoothed_image.data(), height, width);
+
+exportimagenotnormalise(image_data, "smoothed_image", "png", result, width, height);
+
   
   cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
   return A1;
@@ -253,13 +265,14 @@ int main(int argc, char* argv[]) {
 
  // task4
     Matrix3d Hav2 = getHav2();
-    SparseMatrix<double> A1 = task4_imageSmoothing(image_matrix, Hav2, width, height);
+ SparseMatrix<double> A1 =  task4_imageSmoothing(image_matrix, Hav2, width, height, image_data);
+   
+  // task4_imageSmoothingtesting(image_matrix, Hav2, width, height);
    
    
-   
-   // exportimagenotnormalise(image_data, "smoothed_image", "png", smoothed_image, width, height);
+   //exportimagenotnormalise(image_data, "smoothed_image", "png", smoothed_image, width, height);
 // task 5
-    MatrixXd resulmat= task5_matrixvectorMultiplication(A1, w, width, height);
+   MatrixXd resulmat= task5_matrixvectorMultiplication(A1, w, width, height);
 
     exportimagenotnormalise(image_data, "smoothed_noisy_image", "png", resulmat, width, height);
   // Free the image data after use

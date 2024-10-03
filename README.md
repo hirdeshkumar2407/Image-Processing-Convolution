@@ -18,7 +18,7 @@ Apply image filters and find the approximate solution of linear system to proces
         ./tasks Albert_Einstein-256px.jpg 
     ```
 
-## Contributors
+## Contributors 5
 [Hirdesh Kumar](https://github.com/hirdeshkumar2407)
 
 [Nadah Khaled](https://github.com/nadahkhaledd)

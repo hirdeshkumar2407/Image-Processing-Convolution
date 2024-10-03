@@ -12,7 +12,7 @@ Matrix3d getHav1() {
   Hav1 << 0, 1, 0,
           1, 4, 1,
           0, 1, 0;
-  Hav1 = Hav1 / 8.0; // Normalize the kernel
+  Hav1 = Hav1 * (1./8.0); // Normalize the kernel
     return Hav1;
 }
 
@@ -22,7 +22,7 @@ Matrix3d getHav2() {
   Hav2 << 1, 1, 1,
           1, 1, 1,
           1, 1, 1;
-  Hav2 = Hav2 / 9.0; // Normalize the kernel
+  Hav2 = Hav2 * (1./9.0); // Normalize the kernel
     return Hav2;
 }
 

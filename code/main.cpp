@@ -65,7 +65,7 @@ MatrixXd task2(int width, int height, MatrixXd image_matrix) {
 
 // Function to convert MatrixXd to a VectorXd
 VectorXd task3(const MatrixXd& image_matrix) {
-    cout << "\n--------TASK 3----------\n";
+    //cout << "\n--------TASK 3----------\n";
    VectorXd flattened_image =  Map<const VectorXd>(image_matrix.data(), image_matrix.size()); 
    // Use Map<const VectorXd> instead of Map<VectorXd> because image_matrix.data() returns a const double* (read-only pointer).
     //Eigen allows you to use the Map class to reinterpret the matrix's underlying data as a vector without explicitly copying the data.
@@ -79,52 +79,70 @@ VectorXd task3(const MatrixXd& image_matrix) {
  smoothing kernel Hav2 as a matrix vector multiplication 
  between a matrix A1 having size mnXmn and the image vector.
 */
-/*MatrixXd task4_imageSmoothing(MatrixXd image_matrix, MatrixXd smoothing_matrix, int width, int height){
-
-  cout << "\n--------TASK 4----------\n";
+SparseMatrix<double> task4_imageSmoothing(MatrixXd image_matrix, Matrix3d smoothing_matrix, int width, int height) {
+cout << "\n--------TASK 4----------\n";
   int image_size = image_matrix.size();
 
   //  sparse matrix multiplication requires the image to be treated as a 1D vector
-  VectorXd flattened_image = Map<VectorXd>(image_matrix.data(), image_size);
+ VectorXd flattened_image = Map<VectorXd>(image_matrix.transpose().data(), image_size);
+
 
   // A1 with dimensions (256x341) X (256x341)
   SparseMatrix<double> A1(image_size, image_size);
 
   vector<Triplet<double>> nonzero_values;
 
-MatrixXd result(height, width);
+  for (int i = 1; i < height - 1; ++i) {
+        for (int j = 1; j < width - 1; ++j) {
+            int pixel_index = i * width + j;  // index for the current pixel
 
-// Iterate over each pixel except for the boundary pixels
-for (int i = 1; i < height - 1; ++i) {
-    for (int j = 1; j < width - 1; ++j) {
-        // Apply the kernel to the 3x3 region centered on pixel (i, j)
-        double sum = 0.0;
-        for (int ki = -1; ki <= 1; ++ki) {
-            for (int kj = -1; kj <= 1; ++kj) {
-                sum += image_matrix(i + ki, j + kj) * smoothing_matrix(ki + 1, kj + 1);
+            // Apply the 3x3 kernel to each pixel and its neighbors
+            for (int ki = -1; ki <= 1; ++ki) {
+                for (int kj = -1; kj <= 1; ++kj) {
+                    int next_row = i + ki;
+                    int next_col = j + kj;
+                    int next_index = next_row * width + next_col;
+
+                    // Add the kernel value to the corresponding entry in A1
+                    double kernel_value = smoothing_matrix(ki + 1, kj + 1);
+                    nonzero_values.push_back(Triplet<double>(pixel_index, next_index, kernel_value));
+                    
+
+                }
             }
         }
-        result(i, j) = sum;
-    }
-}
-  //A1.setFromTriplets(nonzero_values.begin(), nonzero_values.end());
-  //cout << "Number of non-zero entries in A1: " << A1.nonZeros() << endl;
+  }
+  
 
-  //VectorXd smoothed_image = A1 * flattened_image;
-  //MatrixXd result = Map<MatrixXd>(smoothed_image.data(), height, width);
+  A1.setFromTriplets(nonzero_values.begin(), nonzero_values.end());
+  cout << "Number of non-zero entries in A1: " << A1.nonZeros() << endl;
+ 
 
+/*
+   for (int k = 0; k < A1.outerSize(); ++k) {
+        for (SparseMatrix<double>::InnerIterator it(A1, k); it; ++it) {
+            cout << "Row: " << it.row()       // Row index
+                 << ", Col: " << it.col()     // Column index
+                 << ", Value: " << it.value() // Non-zero value
+                 << endl;
+        }
+    }*/
+  VectorXd smoothed_image = A1 * flattened_image;
+  MatrixXd result = Map<MatrixXd>(smoothed_image.data(), height, width);
+  
   cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
-  cout << "result matrix:" << result << endl;
-  return result;
+  return A1;
 }
-*/
 
-MatrixXd task4_imageSmoothing(const MatrixXd& image_matrix, const Matrix3d& smoothing_matrix) {
+ 
+/*SparseMatrix<double> task4_imageSmoothing(const MatrixXd& image_matrix, const Matrix3d& smoothing_matrix) {
+    cout << "\n--------TASK 4----------\n";
+
     int height = image_matrix.rows();
     int width = image_matrix.cols();
     int image_size = height * width;
 
-    if (smoothing_matrix.rows() != 3 || smoothing_matrix.cols() != 3) {
+if (smoothing_matrix.rows() != 3 || smoothing_matrix.cols() != 3) {
         cerr << "Error: Smoothing matrix must be 3x3." << endl;
         return MatrixXd();  // Return empty matrix on error
     }
@@ -174,9 +192,16 @@ MatrixXd task4_imageSmoothing(const MatrixXd& image_matrix, const Matrix3d& smoo
     cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
     //cout << "result matrix:\n" << result << endl;
 
-    return result;
-}
+    return A1;
+}*/
 
+
+MatrixXd task5_matrixvectorMultiplication(const  SparseMatrix<double>& A1, const VectorXd& w, int width, int height) {
+    VectorXd result = A1 * w;
+    MatrixXd resultmat = Map<MatrixXd>(result.data(), height, width);
+   return resultmat;
+
+}
 
 // Main function
 int main(int argc, char* argv[]) {
@@ -213,6 +238,7 @@ int main(int argc, char* argv[]) {
     exportimagenotnormalise(image_data, "noisy_image", "png", t2_image_matrix, width, height);
 
     // Task 3 Convert the image matrix to a vector
+    cout << "\n--------TASK 3----------\n";
     VectorXd v= task3(image_matrix); //Original image as a vector
     VectorXd w= task3(t2_image_matrix); //Noisy image as a vector
  //cout << "Original image as a vector: " << endl << v << endl;
@@ -227,9 +253,15 @@ int main(int argc, char* argv[]) {
 
  // task4
     Matrix3d Hav2 = getHav2();
-    MatrixXd smoothed_image = task4_imageSmoothing(image_matrix, Hav2);
-    exportimagenotnormalise(image_data, "smoothed_image", "png", smoothed_image, width, height);
+    SparseMatrix<double> A1 = task4_imageSmoothing(image_matrix, Hav2, width, height);
+   
+   
+   
+   // exportimagenotnormalise(image_data, "smoothed_image", "png", smoothed_image, width, height);
+// task 5
+    MatrixXd resulmat= task5_matrixvectorMultiplication(A1, w, width, height);
 
+    exportimagenotnormalise(image_data, "smoothed_noisy_image", "png", resulmat, width, height);
   // Free the image data after use
   stbi_image_free(image_data);
 

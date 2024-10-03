@@ -17,6 +17,10 @@ Apply image filters and find the approximate solution of linear system to proces
         g++ -I ${mkEigenInc} main.cpp filters.cpp -o tasks
         ./tasks Albert_Einstein-256px.jpg 
     ```
+    or in one line 
+    ```
+        g++ -I ${mkEigenInc} main.cpp filters.cpp -o challenge1 && ./challenge1 Albert_Einstein-256px.jpg 
+    ```
 
 ## Contributors 5
 [Hirdesh Kumar](https://github.com/hirdeshkumar2407)

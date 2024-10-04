@@ -132,7 +132,7 @@ SparseMatrix<double> populateSparseMatrix(int image_size, Matrix3d smoothing_mat
 
 
 
-MatrixXd normaliseafterConvMatrix(MatrixXd& matrix) {
+MatrixXd normaliseafterConvSimMatrix(MatrixXd& matrix) {
     double minValue = 0.0;
     double maxValue = 255.0;
 int rows = matrix.rows();
@@ -151,12 +151,35 @@ int rows = matrix.rows();
         }
     }
     // Optionally, you can print the normalized matrix or specific non-zero values
-    cout << "Normalized matrix: \n" << matrix << endl;
+    //cout << "Normalized matrix: \n" << matrix << endl;
     return matrix;
     
 
 }
 
+SparseMatrix<double> normaliseafterConvSpaMatrix(SparseMatrix<double>& sparseMatrix) {
+    for (int k = 0; k < sparseMatrix.outerSize(); ++k) {
+        for (SparseMatrix<double>::InnerIterator it(sparseMatrix, k); it; ++it) {
+            // Access the current non-zero element
+            double value = it.value();
+
+            if (value < 0) {
+               sparseMatrix.coeffRef(it.row(), it.col()) = 0;
+            }
+            else if (value > 255) {
+                sparseMatrix.coeffRef(it.row(), it.col()) = 255;
+            }
+
+
+
+
+        }
+    }
+
+    //printNonZeroEntries(sparseMatrix, 341);
+
+    return sparseMatrix;
+}
 
 
 
@@ -222,6 +245,33 @@ pair<MatrixXd, SparseMatrix<double>> task6_imageSharpening(MatrixXd image_matrix
     return make_pair(result, A2);
 }
 
+
+pair<MatrixXd, SparseMatrix<double>> task10_edge_detection(MatrixXd image_matrix, Matrix3d edge_matrix, int width, int height)
+{
+   
+    int image_size = image_matrix.size();
+
+    //  sparse matrix multiplication requires the image to be treated as a 1D vector
+    VectorXd flattened_image = convertMatrixToVector(image_matrix);
+
+    SparseMatrix<double> A3 = populateSparseMatrix(image_size,  edge_matrix, width, height);
+    // SparseMatrix<double> A3_norm=normaliseafterConvSpaMatrix(A3);
+    cout << "Number of non-zero entries in A3: " << A3.nonZeros() << endl;
+    
+    if (!isSymmetric(A3)) {
+        cout << "Matrix A3 is not symmetric" << endl;
+    }else{
+        cout << "Matrix A3 is symmetric" << endl;
+    }
+
+
+    MatrixXd result = spMatrixVectorMultiplication(A3, flattened_image, width, height);
+    //MatrixXd result_norm=normaliseafterConvSimMatrix(result);
+    result = result.cwiseMin(255).cwiseMax(0);
+    //cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
+    return make_pair(result, A3);
+}
+
 // Main function
 int main(int argc, char *argv[])
 {
@@ -277,15 +327,27 @@ int main(int argc, char *argv[])
     pair<MatrixXd, SparseMatrix<double>> result2 = task6_imageSharpening(image_matrix, Hsh2, width, height);
 
   
-     cout << "\n--------TASK 7----------\n";
+    cout << "\n--------TASK 7----------\n";
     // -- Task 7 --
-
     SparseMatrix<double> A2 = result2.second;
     MatrixXd resulmat2 = spMatrixVectorMultiplication(A2, v, width, height);
-    
    exportimagenotnormalise(image_data, "sharpened_orignal_image", "png", resulmat2, width, height);
+
+   // -- Task 8 --
+   //cout << "\n--------TASK 8----------\n";
+   // -- Task 9 --
+   // cout << "\n--------TASK 9----------\n";
+ 
+   // -- Task 10 --
+   cout << "\n--------TASK 10----------\n";
+      Matrix3d Hlap = getHlap();
+    pair<MatrixXd, SparseMatrix<double>> result3 =task10_edge_detection(image_matrix, Hlap, width, height);
     
-    
+     cout << "\n--------TASK 11----------\n";
+    // -- Task 11 --
+    SparseMatrix<double> A3 = result3.second;
+    MatrixXd resulmat3 = spMatrixVectorMultiplication(A3, v, width, height);
+   exportimagenotnormalise(image_data, "edge_detection_image", "png", resulmat3, width, height);
     // Free the image data after use
     stbi_image_free(image_data);
 

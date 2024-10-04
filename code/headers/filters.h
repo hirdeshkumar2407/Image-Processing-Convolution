@@ -10,5 +10,6 @@ using namespace std;
 Matrix3d getHav1();
 Matrix3d getHav2();
 Matrix3d getHsh2();
+Matrix3d getHlap();
 
 #endif

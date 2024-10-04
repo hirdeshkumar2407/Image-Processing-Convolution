@@ -39,3 +39,15 @@ Matrix3d getHsh2()
 
     return Hsh2;
 }
+
+
+// -- laplacian kernel matrix
+Matrix3d getHlap()
+{
+    Matrix3d Hlap;
+    Hlap << 0, -1, 0,
+        -1, 4, -1,
+        0, -1, 0;
+
+    return Hlap;
+}

@@ -20,18 +20,6 @@
 using namespace Eigen;
 using namespace std;
 
-void printNonZeroEntries(const SparseMatrix<double>& sparseMatrix, int stopper) {
-    cout << "Printing non-zero entries of the sparse matrix:" << endl;
-    for (int k = 0; k < sparseMatrix.outerSize()-stopper; ++k) {
-        cout << "Outer index: " << k << endl;
-        for (SparseMatrix<double>::InnerIterator it(sparseMatrix, k); it; ++it) {
-            cout << "Non-zero value at (" << it.row() << ", " << it.col() << ") = " << it.value() << endl;
-        }
-    }
-}
-// Function to perform normalisation to sparse matrix between 0 and 255
-
-
 // Function to get image dimensions and load the image data
 tuple<int, int, int, unsigned char *> task1_getImageDimensions(char *input_image_path)
 {
@@ -56,9 +44,9 @@ void exportimagenotnormalise(unsigned char *image_data, const string &image_name
 
     // Map the matrix values to the grayscale range [0, 255]
     transform_image = image.unaryExpr([](double val) -> unsigned char
-                                      {
-                                          return static_cast<unsigned char>(std::min(std::max(val, 0.0), 255.0)); // Ensure values stay in [0, 255]
-                                      });
+        {
+            return static_cast<unsigned char>(std::min(std::max(val, 0.0), 255.0)); // Ensure values stay in [0, 255]
+        });
 
     string output_image_path = "results/" + image_name + "." + ext;
 
@@ -130,63 +118,51 @@ SparseMatrix<double> populateSparseMatrix(int image_size, Matrix3d smoothing_mat
     }
 
     sp_matrix.setFromTriplets(nonzero_values.begin(), nonzero_values.end());
-
-    // printNonZeroEntries(sp_matrix, 359);
     return sp_matrix;
 }
 
-
-
-MatrixXd normaliseafterConvSimMatrix(MatrixXd& matrix) {
-    double minValue = 0.0;
-    double maxValue = 255.0;
-int rows = matrix.rows();
-    int cols = matrix.cols();
-    // Iterate through each element in the dense matrix
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < cols; ++j) {
-            double value = matrix(i, j);
-            // Clamp the value to the range [minValue, maxValue]
-            if (value < minValue) {
-                matrix(i, j) = minValue;
-            }
-            else if (value > maxValue) {
-                matrix(i, j) = maxValue;
-            }
-        }
-    }
-    // Optionally, you can print the normalized matrix or specific non-zero values
-    //cout << "Normalized matrix: \n" << matrix << endl;
-    return matrix;
+// MatrixXd normalizeMatrix(MatrixXd& matrix) {
+//     double minValue = 0.0;
+//     double maxValue = 255.0;
+//     int rows = matrix.rows();
+//     int cols = matrix.cols();
     
+//     for (int i = 0; i < rows; ++i)
+//     {
+//         for (int j = 0; j < cols; ++j)
+//         {
+//             double value = matrix(i, j);
+//             // Clamp the value to the range [minValue, maxValue]
+//             if (value < minValue)
+//             {
+//                 matrix(i, j) = minValue;
+//             }
+//             else if (value > maxValue)
+//             {
+//                 matrix(i, j) = maxValue;
+//             }
+//         }
+//     }
+//     return matrix;
+// }
 
-}
+// SparseMatrix<double> normalizeSparseMatrix(SparseMatrix<double>& sparseMatrix) {
+//     for (int k = 0; k < sparseMatrix.outerSize(); ++k) {
+//         for (SparseMatrix<double>::InnerIterator it(sparseMatrix, k); it; ++it) {
+//             // Access the current non-zero element
+//             double value = it.value();
 
-SparseMatrix<double> normaliseafterConvSpaMatrix(SparseMatrix<double>& sparseMatrix) {
-    for (int k = 0; k < sparseMatrix.outerSize(); ++k) {
-        for (SparseMatrix<double>::InnerIterator it(sparseMatrix, k); it; ++it) {
-            // Access the current non-zero element
-            double value = it.value();
+//             if (value < 0) {
+//                sparseMatrix.coeffRef(it.row(), it.col()) = 0;
+//             }
+//             else if (value > 255) {
+//                 sparseMatrix.coeffRef(it.row(), it.col()) = 255;
+//             }
 
-            if (value < 0) {
-               sparseMatrix.coeffRef(it.row(), it.col()) = 0;
-            }
-            else if (value > 255) {
-                sparseMatrix.coeffRef(it.row(), it.col()) = 255;
-            }
-
-
-
-
-        }
-    }
-
-    //printNonZeroEntries(sparseMatrix, 341);
-
-    return sparseMatrix;
-}
-
-
+//         }
+//     }
+//     return sparseMatrix;
+// }
 
 
 MatrixXd spMatrixVectorMultiplication(const SparseMatrix<double> &sp_matrix, const VectorXd &vec, int width, int height)
@@ -196,92 +172,57 @@ MatrixXd spMatrixVectorMultiplication(const SparseMatrix<double> &sp_matrix, con
     return resultmat;
 }
 
-/*
- smoothing kernel Hav2 as a matrix vector multiplication
- between a matrix A1 having size mnXmn and the image vector.
-*/
-pair<MatrixXd, SparseMatrix<double>> task4_imageSmoothing(MatrixXd image_matrix, Matrix3d smoothing_matrix, int width, int height)
-{
-    cout << "\n--------TASK 4----------\n";
-    int image_size = image_matrix.size();
+// pair<MatrixXd, SparseMatrix<double>> task4_imageSmoothing(MatrixXd image_matrix, Matrix3d smoothing_matrix, int width, int height)
+// {
+//     cout << "\n--------TASK 4----------\n";
+//     int image_size = image_matrix.size();
 
-    //  sparse matrix multiplication requires the image to be treated as a 1D vector
-    VectorXd flattened_image = convertMatrixToVector(image_matrix);
+//     //  sparse matrix multiplication requires the image to be treated as a 1D vector
+//     VectorXd flattened_image = convertMatrixToVector(image_matrix);
 
-    SparseMatrix<double> A1 = populateSparseMatrix(image_size, smoothing_matrix, width, height);
-    cout << "Number of non-zero entries in A1: " << A1.nonZeros() << endl;
+//     SparseMatrix<double> A1 = populateSparseMatrix(image_size, smoothing_matrix, width, height);
+//     cout << "Number of non-zero entries in A1: " << A1.nonZeros() << endl;
 
-    MatrixXd result = spMatrixVectorMultiplication(A1, flattened_image, width, height);
-    //cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
-    return make_pair(result, A1);
-}
+//     MatrixXd result = spMatrixVectorMultiplication(A1, flattened_image, width, height);
+//     //cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
+//     return make_pair(result, A1);
+// }
+
 bool isSymmetric(const SparseMatrix<double>& matrix) {
-    // Check if the matrix has the same number of rows and columns
     if (matrix.rows() != matrix.cols()) {
         return false;  // A non-square matrix cannot be symmetric
     }
 
-    // Compare the matrix with its transpose
     SparseMatrix<double> transposeMatrix = matrix.transpose();
-
-    // Check if all the elements are the same
     return matrix.isApprox(transposeMatrix);
 }
 
-pair<MatrixXd, SparseMatrix<double>> task6_imageSharpening(MatrixXd image_matrix, Matrix3d sharpening_matrix, int width, int height)
+pair<MatrixXd, SparseMatrix<double>> imageConvolution(VectorXd flattened_image, Matrix3d kernel_matrix, string spMatrix_name, int width, int height, bool normalized, bool symmetry)
 {
-    cout << "\n--------TASK 6----------\n";
-    int image_size = image_matrix.size();
+    int image_size = height * width;
 
-    //  sparse matrix multiplication requires the image to be treated as a 1D vector
-    VectorXd flattened_image = convertMatrixToVector(image_matrix);
-
-    SparseMatrix<double> A2 = populateSparseMatrix(image_size,  sharpening_matrix, width, height);
+    SparseMatrix<double> sparseMatrix = populateSparseMatrix(image_size,  kernel_matrix, width, height);
    
-    cout << "Number of non-zero entries in A2: " << A2.nonZeros() << endl;
+    cout << "Number of non-zero entries in " << spMatrix_name << ": " << sparseMatrix.nonZeros() << endl;
     
-    if (!isSymmetric(A2)) {
-        cout << "Matrix A2 is not symmetric" << endl;
-    }else{
-        cout << "Matrix A2 is symmetric" << endl;
+    if(symmetry){
+        if (!isSymmetric(sparseMatrix))
+        {
+            cout << spMatrix_name << " is not symmetric" << endl;
+        }
+        else
+        {
+            cout << spMatrix_name << " is symmetric" << endl;
+        }
     }
-    MatrixXd result = spMatrixVectorMultiplication(A2, flattened_image, width, height);
-    //cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
-    return make_pair(result, A2);
-}
-
-
-pair<MatrixXd, SparseMatrix<double>> task10_edge_detection(MatrixXd image_matrix, Matrix3d edge_matrix, int width, int height)
-{
-   
-    int image_size = image_matrix.size();
-
-    //  sparse matrix multiplication requires the image to be treated as a 1D vector
-    VectorXd flattened_image = convertMatrixToVector(image_matrix);
-
-    SparseMatrix<double> A3 = populateSparseMatrix(image_size,  edge_matrix, width, height);
-    // SparseMatrix<double> A3_norm=normaliseafterConvSpaMatrix(A3);
-    cout << "Number of non-zero entries in A3: " << A3.nonZeros() << endl;
     
-    if (!isSymmetric(A3)) {
-        cout << "Matrix A3 is not symmetric" << endl;
-    }else{
-        cout << "Matrix A3 is symmetric" << endl;
-    }
-
-
-    MatrixXd result = spMatrixVectorMultiplication(A3, flattened_image, width, height);
-    //MatrixXd result_norm=normaliseafterConvSimMatrix(result);
-    result = result.cwiseMin(255).cwiseMax(0);
-    //cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
-    return make_pair(result, A3);
+    MatrixXd result = spMatrixVectorMultiplication(sparseMatrix, flattened_image, width, height);
+    result = normalized?(result.cwiseMin(255).cwiseMax(0)):result;
+    return make_pair(result, sparseMatrix);
 }
-
-
 
 void exportVectortomtx(const VectorXd &v, const char*  filename)
 {
-    //const char* input_filename = filename;
     int n = v.size();
     FILE* out = fopen(filename,"w");
     fprintf(out,"%%%%MatrixMarket vector coordinate real general\n");
@@ -290,7 +231,7 @@ void exportVectortomtx(const VectorXd &v, const char*  filename)
         fprintf(out,"%d %f\n", i ,v(i));
     }
     fclose(out);
-        cout << filename << " vector exported successfully to .mtx"  << endl;
+        cout << filename << " vector exported successfully"  << endl;
 
 }
 
@@ -324,27 +265,6 @@ void task8_exportmatrixes(SparseMatrix<double> &A2, VectorXd &w)
    
 }
 
-/*
- 
-VectorXd loadVectorFromMTX(const string &filename) {
-    // Load the matrix from file
-    MatrixXd mat;
-    std::ifstream file(filename);
-    
-    if (!file.is_open()) {
-        std::cerr << "Error opening file: " << filename << std::endl;
-        return VectorXd();
-    }
-    // Read the matrix data
-    file >> mat;
-    
-    // Close the file
-    file.close();
-    // Convert the matrix to a vector
-    VectorXd vec = mat.col(0); // Assuming it's a single column
-    return vec;
-}*/
-
 VectorXd loadVectorFromMTX(const string &filename) {
     // Load the vector from file
     ifstream file(filename);
@@ -354,7 +274,6 @@ VectorXd loadVectorFromMTX(const string &filename) {
         return VectorXd();
     }
 
-    // Read the header line and discard it
     string line;
     getline(file, line); // Skip the first line (MatrixMarket header)
 
@@ -362,31 +281,23 @@ VectorXd loadVectorFromMTX(const string &filename) {
     int numEntries;
     file >> numEntries;
 
-    // Create a vector with the specified number of rows
     VectorXd vec(numEntries);
-
-    // Read each index and value pair
     for (int i = 0; i < numEntries; ++i) {
         int index;
         double value;
 
-        file >> index >> value; // Read index and value
+        file >> index >> value;
         vec[index - 1] = value;  // Convert to 0-based indexing
     }
 
-    // Close the file
     file.close();
-
     return vec;
 }
-
  
- 
-MatrixXd task9_exportvectorimage(const char*  filename, int height, int width)
+MatrixXd exportVectorMTXto2DMatrix(const char*  filename, int height, int width)
 {
     VectorXd vec=loadVectorFromMTX(filename);
  
-
     MatrixXd resultmat = Map<MatrixXd>(vec.data(), height, width);
     return resultmat;
 }
@@ -432,49 +343,46 @@ int main(int argc, char *argv[])
     cout << "Euclidean norm of v norm: " << v.norm() << endl;
 
     // -- Task 4 --
+    cout << "\n--------TASK 4----------\n";
     Matrix3d Hav2 = getHav2();
-    pair<MatrixXd, SparseMatrix<double>> result = task4_imageSmoothing(image_matrix, Hav2, width, height);
+    pair<MatrixXd, SparseMatrix<double>> result = imageConvolution(v, Hav2, "A1", width, height, false, false);
     //exportimagenotnormalise(image_data, "smoothed_image", "png", result.first, width, height);
 
-    // -- Task 5 --
     cout << "\n--------TASK 5----------\n";
     SparseMatrix<double> A1 = result.second;
     MatrixXd resulmat = spMatrixVectorMultiplication(A1, w, width, height);
     exportimagenotnormalise(image_data, "smoothed_noisy", "png", resulmat, width, height);
 
     // -- Task 6 --
+    cout << "\n--------TASK 6----------\n";
     Matrix3d Hsh2 = getHsh2();
-    pair<MatrixXd, SparseMatrix<double>> result2 = task6_imageSharpening(image_matrix, Hsh2, width, height);
+    pair<MatrixXd, SparseMatrix<double>> sharpened_image = imageConvolution(v, Hsh2, "A2", width, height, false, true);
+    SparseMatrix<double> A2 = sharpened_image.second;
 
-  
     cout << "\n--------TASK 7----------\n";
-    // -- Task 7 --
-    SparseMatrix<double> A2 = result2.second;
-    MatrixXd resulmat2 = spMatrixVectorMultiplication(A2, v, width, height);
-   exportimagenotnormalise(image_data, "sharpened_orignal_image", "png", resulmat2, width, height);
+    exportimagenotnormalise(image_data, "sharpened_image", "png", sharpened_image.first, width, height);
 
-   // -- Task 8 --
-   cout << "\n--------TASK 8----------\n";
-   task8_exportmatrixes(A2, w);
-   const char* commandtask8 = "mpirun -n 1 ./iterativesolver A2.mtx w.mtx x-sol.mtx hist.txt -i bicg -tol 1.0e-9 -p ilu";
-   system(commandtask8);
+    // -- Task 8 --
+    cout << "\n--------TASK 8----------\n";
+    task8_exportmatrixes(A2, w);
+    const char *commandtask8 = "mpirun -n 1 ./challenge1 A2.mtx w.mtx x-sol.mtx hist.txt -i bicg -tol 1.0e-9 -p ilu";
+    system(commandtask8);
 
-   // -- Task 9 --
-   cout << "\n--------TASK 9----------\n";
-    MatrixXd resultmat9 = task9_exportvectorimage("x-sol.mtx", height, width);
+    // -- Task 9 --
+    cout << "\n--------TASK 9----------\n";
+    MatrixXd resultmat9 = exportVectorMTXto2DMatrix("x-sol.mtx", height, width);
     exportimagenotnormalise(image_data, "x_image", "png", resultmat9, width, height);
 
- 
-   // -- Task 10 --
-   cout << "\n--------TASK 10----------\n";
-      Matrix3d Hlap = getHlap();
-    pair<MatrixXd, SparseMatrix<double>> result3 =task10_edge_detection(image_matrix, Hlap, width, height);
-    
-     cout << "\n--------TASK 11----------\n";
-    // -- Task 11 --
-    SparseMatrix<double> A3 = result3.second;
-    MatrixXd resulmat3 = spMatrixVectorMultiplication(A3, v, width, height);
-   exportimagenotnormalise(image_data, "edge_detection_image", "png", resulmat3, width, height);
+    // -- Task 10 --
+    cout << "\n--------TASK 10----------\n";
+    Matrix3d Hlap = getHlap();
+    pair<MatrixXd, SparseMatrix<double>> edge_detection_img = imageConvolution(v, Hlap, "A3", width, height, true, true);
+    SparseMatrix<double> A3 = edge_detection_img.second;
+
+    cout << "\n--------TASK 11----------\n";
+    exportimagenotnormalise(image_data, "edge_detection_image", "png", edge_detection_img.first, width, height);
+
+
     // Free the image data after use
     stbi_image_free(image_data);
 

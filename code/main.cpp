@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <tuple>
 #include <utility>
+#include <algorithm>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "headers/stb_image.h"
@@ -13,6 +14,18 @@
 
 using namespace Eigen;
 using namespace std;
+
+void printNonZeroEntries(const SparseMatrix<double>& sparseMatrix, int stopper) {
+    cout << "Printing non-zero entries of the sparse matrix:" << endl;
+    for (int k = 0; k < sparseMatrix.outerSize()-stopper; ++k) {
+        cout << "Outer index: " << k << endl;
+        for (SparseMatrix<double>::InnerIterator it(sparseMatrix, k); it; ++it) {
+            cout << "Non-zero value at (" << it.row() << ", " << it.col() << ") = " << it.value() << endl;
+        }
+    }
+}
+// Function to perform normalisation to sparse matrix between 0 and 255
+
 
 // Function to get image dimensions and load the image data
 tuple<int, int, int, unsigned char *> task1_getImageDimensions(char *input_image_path)
@@ -100,7 +113,11 @@ SparseMatrix<double> populateSparseMatrix(int image_size, Matrix3d smoothing_mat
                     }
                     // Add the kernel value to the corresponding entry in A1
                     double kernel_value = smoothing_matrix(ki + 1, kj + 1);
-                    nonzero_values.push_back(Triplet<double>(pixel_index, next_index, kernel_value));
+
+                   if(kernel_value != 0){
+                   nonzero_values.push_back(Triplet<double>(pixel_index, next_index, kernel_value));
+                   }
+                    
                     // break;
                 }
             }
@@ -108,8 +125,41 @@ SparseMatrix<double> populateSparseMatrix(int image_size, Matrix3d smoothing_mat
     }
 
     sp_matrix.setFromTriplets(nonzero_values.begin(), nonzero_values.end());
+
+    // printNonZeroEntries(sp_matrix, 359);
     return sp_matrix;
 }
+
+
+
+MatrixXd normaliseafterConvMatrix(MatrixXd& matrix) {
+    double minValue = 0.0;
+    double maxValue = 255.0;
+int rows = matrix.rows();
+    int cols = matrix.cols();
+    // Iterate through each element in the dense matrix
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            double value = matrix(i, j);
+            // Clamp the value to the range [minValue, maxValue]
+            if (value < minValue) {
+                matrix(i, j) = minValue;
+            }
+            else if (value > maxValue) {
+                matrix(i, j) = maxValue;
+            }
+        }
+    }
+    // Optionally, you can print the normalized matrix or specific non-zero values
+    cout << "Normalized matrix: \n" << matrix << endl;
+    return matrix;
+    
+
+}
+
+
+
+
 
 MatrixXd spMatrixVectorMultiplication(const SparseMatrix<double> &sp_matrix, const VectorXd &vec, int width, int height)
 {
@@ -136,6 +186,24 @@ pair<MatrixXd, SparseMatrix<double>> task4_imageSmoothing(MatrixXd image_matrix,
     MatrixXd result = spMatrixVectorMultiplication(A1, flattened_image, width, height);
     //cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
     return make_pair(result, A1);
+}
+
+
+pair<MatrixXd, SparseMatrix<double>> task6_imageSharpening(MatrixXd image_matrix, Matrix3d sharpening_matrix, int width, int height)
+{
+    cout << "\n--------TASK 6----------\n";
+    int image_size = image_matrix.size();
+
+    //  sparse matrix multiplication requires the image to be treated as a 1D vector
+    VectorXd flattened_image = convertMatrixToVector(image_matrix);
+
+    SparseMatrix<double> A2 = populateSparseMatrix(image_size,  sharpening_matrix, width, height);
+   
+    cout << "Number of non-zero entries in A2: " << A2.nonZeros() << endl;
+
+    MatrixXd result = spMatrixVectorMultiplication(A2, flattened_image, width, height);
+    //cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
+    return make_pair(result, A2);
 }
 
 // Main function
@@ -188,6 +256,20 @@ int main(int argc, char *argv[])
     MatrixXd resulmat = spMatrixVectorMultiplication(A1, w, width, height);
     exportimagenotnormalise(image_data, "smoothed_noisy", "png", resulmat, width, height);
 
+    // -- Task 6 --
+    Matrix3d Hsh2 = getHsh2();
+    pair<MatrixXd, SparseMatrix<double>> result2 = task6_imageSharpening(image_matrix, Hsh2, width, height);
+
+    exportimagenotnormalise(image_data, "sharpened_image", "png", result2.first, width, height);
+    
+    // -- Task 7 --
+
+    SparseMatrix<double> A2 = result2.second;
+    MatrixXd resulmat2 = spMatrixVectorMultiplication(A2, v, width, height);
+    
+   exportimagenotnormalise(image_data, "sharpened_orignal_image", "png", resulmat2, width, height);
+    
+    
     // Free the image data after use
     stbi_image_free(image_data);
 

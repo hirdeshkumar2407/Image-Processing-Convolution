@@ -1,10 +1,15 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
+#include <unsupported/Eigen/SparseExtra>
+#include <cstring>
 #include <iostream>
+#include <sstream>
 #include <cstdlib>
 #include <tuple>
 #include <utility>
 #include <algorithm>
+#include <fstream>
+//#include "headers/iterative.h"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "headers/stb_image.h"
@@ -272,6 +277,121 @@ pair<MatrixXd, SparseMatrix<double>> task10_edge_detection(MatrixXd image_matrix
     return make_pair(result, A3);
 }
 
+
+
+void exportVectortomtx(const VectorXd &v, const char*  filename)
+{
+    //const char* input_filename = filename;
+    int n = v.size();
+    FILE* out = fopen(filename,"w");
+    fprintf(out,"%%%%MatrixMarket vector coordinate real general\n");
+    fprintf(out,"%d\n", n);
+    for (int i=0; i<n; i++) {
+        fprintf(out,"%d %f\n", i ,v(i));
+    }
+    fclose(out);
+        cout << filename << " vector exported successfully to .mtx"  << endl;
+
+}
+
+void exportSparseMatrixToMTX(const SparseMatrix<double>& sparseMatrix, const std::string& filename) {
+    std::ofstream outFile(filename+".mtx");
+    if (!outFile.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return;
+    }
+
+    // Write header for the Matrix Market file
+    outFile << "%%MatrixMarket matrix coordinate real general" << std::endl;
+    outFile << sparseMatrix.rows() << " " << sparseMatrix.cols() << " " << sparseMatrix.nonZeros() << std::endl;
+
+    // Write non-zero values (in 1-based indexing)
+    for (int k = 0; k < sparseMatrix.outerSize(); ++k) {
+        for (SparseMatrix<double>::InnerIterator it(sparseMatrix, k); it; ++it) {
+            // Write row, column (in 1-based indexing), and value
+            outFile << it.row() + 1 << " " << it.col() + 1 << " " << it.value() << std::endl;
+        }
+    }
+
+    outFile.close();
+    cout << filename << " matrix exported successfully to .mtx"  << endl;
+}
+
+void task8_exportmatrixes(SparseMatrix<double> &A2, VectorXd &w)
+{
+    exportSparseMatrixToMTX(A2, "A2");
+    exportVectortomtx(w, "w.mtx");
+   
+}
+
+/*
+ 
+VectorXd loadVectorFromMTX(const string &filename) {
+    // Load the matrix from file
+    MatrixXd mat;
+    std::ifstream file(filename);
+    
+    if (!file.is_open()) {
+        std::cerr << "Error opening file: " << filename << std::endl;
+        return VectorXd();
+    }
+    // Read the matrix data
+    file >> mat;
+    
+    // Close the file
+    file.close();
+    // Convert the matrix to a vector
+    VectorXd vec = mat.col(0); // Assuming it's a single column
+    return vec;
+}*/
+
+VectorXd loadVectorFromMTX(const string &filename) {
+    // Load the vector from file
+    ifstream file(filename);
+
+    if (!file.is_open()) {
+        cerr << "Error opening file: " << filename << endl;
+        return VectorXd();
+    }
+
+    // Read the header line and discard it
+    string line;
+    getline(file, line); // Skip the first line (MatrixMarket header)
+
+    // Read the number of entries
+    int numEntries;
+    file >> numEntries;
+
+    // Create a vector with the specified number of rows
+    VectorXd vec(numEntries);
+
+    // Read each index and value pair
+    for (int i = 0; i < numEntries; ++i) {
+        int index;
+        double value;
+
+        file >> index >> value; // Read index and value
+        vec[index - 1] = value;  // Convert to 0-based indexing
+    }
+
+    // Close the file
+    file.close();
+
+    return vec;
+}
+
+ 
+ 
+MatrixXd task9_exportvectorimage(const char*  filename, int height, int width)
+{
+    VectorXd vec=loadVectorFromMTX(filename);
+ 
+
+    MatrixXd resultmat = Map<MatrixXd>(vec.data(), height, width);
+    return resultmat;
+}
+
+
 // Main function
 int main(int argc, char *argv[])
 {
@@ -334,9 +454,16 @@ int main(int argc, char *argv[])
    exportimagenotnormalise(image_data, "sharpened_orignal_image", "png", resulmat2, width, height);
 
    // -- Task 8 --
-   //cout << "\n--------TASK 8----------\n";
+   cout << "\n--------TASK 8----------\n";
+   task8_exportmatrixes(A2, w);
+   const char* commandtask8 = "mpirun -n 1 ./iterativesolver A2.mtx w.mtx x-sol.mtx hist.txt -i bicg -tol 1.0e-9 -p ilu";
+   system(commandtask8);
+
    // -- Task 9 --
-   // cout << "\n--------TASK 9----------\n";
+   cout << "\n--------TASK 9----------\n";
+    MatrixXd resultmat9 = task9_exportvectorimage("x-sol.mtx", height, width);
+    exportimagenotnormalise(image_data, "x_image", "png", resultmat9, width, height);
+
  
    // -- Task 10 --
    cout << "\n--------TASK 10----------\n";

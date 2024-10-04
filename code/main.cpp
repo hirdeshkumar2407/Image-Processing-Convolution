@@ -187,7 +187,18 @@ pair<MatrixXd, SparseMatrix<double>> task4_imageSmoothing(MatrixXd image_matrix,
     //cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
     return make_pair(result, A1);
 }
+bool isSymmetric(const SparseMatrix<double>& matrix) {
+    // Check if the matrix has the same number of rows and columns
+    if (matrix.rows() != matrix.cols()) {
+        return false;  // A non-square matrix cannot be symmetric
+    }
 
+    // Compare the matrix with its transpose
+    SparseMatrix<double> transposeMatrix = matrix.transpose();
+
+    // Check if all the elements are the same
+    return matrix.isApprox(transposeMatrix);
+}
 
 pair<MatrixXd, SparseMatrix<double>> task6_imageSharpening(MatrixXd image_matrix, Matrix3d sharpening_matrix, int width, int height)
 {
@@ -200,7 +211,12 @@ pair<MatrixXd, SparseMatrix<double>> task6_imageSharpening(MatrixXd image_matrix
     SparseMatrix<double> A2 = populateSparseMatrix(image_size,  sharpening_matrix, width, height);
    
     cout << "Number of non-zero entries in A2: " << A2.nonZeros() << endl;
-
+    
+    if (!isSymmetric(A2)) {
+        cout << "Matrix A2 is not symmetric" << endl;
+    }else{
+        cout << "Matrix A2 is symmetric" << endl;
+    }
     MatrixXd result = spMatrixVectorMultiplication(A2, flattened_image, width, height);
     //cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
     return make_pair(result, A2);
@@ -260,8 +276,8 @@ int main(int argc, char *argv[])
     Matrix3d Hsh2 = getHsh2();
     pair<MatrixXd, SparseMatrix<double>> result2 = task6_imageSharpening(image_matrix, Hsh2, width, height);
 
-    exportimagenotnormalise(image_data, "sharpened_image", "png", result2.first, width, height);
-    
+  
+     cout << "\n--------TASK 7----------\n";
     // -- Task 7 --
 
     SparseMatrix<double> A2 = result2.second;

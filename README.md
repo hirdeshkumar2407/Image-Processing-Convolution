@@ -159,11 +159,15 @@ Euclidean norm of v norm: 35576.6
 ```
 ### Task 4: Apply Smoothing Filter
 - Write the convolution operation corresponding to the **smoothing kernel \( H_{\text{av2}} \)**, which is a matrix-vector multiplication between the  A<sub>1</sub> (size mn x mn) image matrix and the kernel.
-- The **smoothing kernel** used is
-H_av2 = 1/9 * 
-| 1  1  1 |
-| 1  1  1 |
-| 1  1  1 |
+- The **smoothing kernel** used is:
+H<sub>av2</sub> = 
+$$ 
+ 1/9 *  \begin{pmatrix} 
+1 & 1 & 1 \\
+1 & 1 & 1  \\
+1 & 1 & 1  \\
+\end{pmatrix}
+$$ 
 - Verify that each vector has the same number of components and report the number of non-zero entries in these vectors.
 
 

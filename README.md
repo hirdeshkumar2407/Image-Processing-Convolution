@@ -158,9 +158,12 @@ w mn:87296
 Euclidean norm of v norm: 35576.6
 ```
 ### Task 4: Apply Smoothing Filter
-- Write the convolution operation corresponding to the **smoothing kernel \( H_{\text{av2}} \)**, which is a matrix-vector multiplication between the  A<sub>1</sub> (size mn x mn) image matrix and the kernel.
+
 The **smoothing kernel** used is:
 $$ H_{\text{av2}} = \frac{1}{9} \begin{pmatrix} 1 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 1 & 1 \end{pmatrix} $$
+
+
+- Write the convolution operation corresponding to the **smoothing kernel \( H_{\text{av2}} \)**, which is a matrix-vector multiplication between the  A<sub>1</sub> (size mn x mn) image matrix and the kernel.
 - Verify that each vector has the same number of components and report the number of non-zero entries in these vectors.
 
 
@@ -316,7 +319,7 @@ Here our filters modify the image during the convolution process:
 This project demonstrates how image processing tasks such as **smoothing**, **sharpening**, and **edge detection** can be effectively implemented using convolution operations and linear algebra methods. The **Eigen** library in C++ provides an efficient way to handle matrix operations and solve linear systems, crucial for real-time image processing applications.
 
 ---
-## Credits
+## Acknowledgements
 
 This was challenge  was assigned as part of the course **Numerical Linear Algebra in High-Performance Computing (2024/25)** at **Politecnico di Milano**. We extend our sincere gratitude to:
 

@@ -365,7 +365,7 @@ int main(int argc, char *argv[])
     // -- Task 8 --
     cout << "\n--------TASK 8----------\n";
     task8_exportmatrixes(A2, w);
-    const char *commandtask8 = "mpirun -n 1 ./challenge1 A2.mtx w.mtx x-sol.mtx hist.txt -i bicg -tol 1.0e-9 -p ilu";
+    const char *commandtask8 = "mpirun -n 1 ./iterativesolver A2.mtx w.mtx x-sol.mtx hist.txt -i bicg -tol 1.0e-9 -p ilu";
     system(commandtask8);
 
     // -- Task 9 --

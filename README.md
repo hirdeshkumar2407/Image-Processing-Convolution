@@ -21,8 +21,8 @@ Let’s walk through an example of convolution using a 5x5 image matrix and a 2x
 
 ### Step 1: Image Matrix \( F \)
 The original grayscale image is represented as a 5x5 matrix \( F \), where each number corresponds to a pixel's intensity.
+
 $$ 
-\[
 F = \begin{pmatrix}
 1 & 2 & 3 & 0 & 1 \\
 4 & 5 & 6 & 1 & 2 \\
@@ -30,25 +30,24 @@ F = \begin{pmatrix}
 2 & 3 & 4 & 2 & 0 \\
 1 & 0 & 1 & 2 & 3
 \end{pmatrix}
-\]
 $$ 
+
 ### Step 2: Kernel Matrix \( H \)
 A kernel matrix (2x2 in this example) defines the filter being applied to the image.
+
 $$ 
-\[
 H = \begin{pmatrix}
 1 & 0 \\
 0 & -1
 \end{pmatrix}
-\]
 $$ 
 
 ### Step 3: Convolution Operation
 The kernel slides over the image matrix, starting from the top-left corner, performing element-wise multiplication, and summing the results.
 
 For the top-left corner of the image:
+
 $$ 
-\[
 \begin{pmatrix}
 1 & 2 \\
 4 & 5
@@ -58,11 +57,11 @@ H = \begin{pmatrix}
 1 & 0 \\
 0 & -1
 \end{pmatrix}
-\]
 $$ 
+
 Element-wise multiplication:
+
 $$ 
-\[
 \begin{pmatrix}
 1 \cdot 1 & 2 \cdot 0 \\
 4 \cdot 0 & 5 \cdot (-1)
@@ -71,24 +70,24 @@ $$
 1 & 0 \\
 0 & -5
 \end{pmatrix}
-\]
 $$ 
-Summing the results gives $$  \( 1 + 0 + 0 - 5 = -4 \)$$ .
+
+Summing the results gives \( 1 + 0 + 0 - 5 = -4 \).
 
 This process is repeated for each position, sliding the kernel across the image.
 
 ### Step 4: Output Matrix \( G \)
 The resulting filtered image (output matrix) is smaller due to the convolution process. Here’s an example output matrix:
+
 $$ 
-\[
 G = \begin{pmatrix}
 -4 & -4 & -3 & 5 \\
 -2 & -2 & -5 & 0 \\
 3 & 4 & -1 & -1 \\
 0 & 2 & 1 & 1
 \end{pmatrix}
-\]
 $$ 
+
 ---
 
 ## 3. Why Numerical Linear Algebra?
@@ -118,6 +117,7 @@ We use the **Eigen** library for matrix manipulation and solving linear systems.
 #include "headers/stb_image_write.h"  // Image writing
 #include "headers/filters.h"  // Custom filters
 ```
+---
 
 ## 5. Task Descriptions
 
@@ -160,15 +160,13 @@ Euclidean norm of v norm: 35576.6
 ### Task 4: Apply Smoothing Filter
 - Write the convolution operation corresponding to the **smoothing kernel \( H_{\text{av2}} \)**, which is a matrix-vector multiplication between the  A<sub>1</sub> (size mn x mn) image matrix and the kernel.
 - The **smoothing kernel** used is:
-$$ 
-  \[
+ $$
   H_{\text{av2}} = \frac{1}{9} \begin{pmatrix}
   1 & 1 & 1 \\
   1 & 1 & 1 \\
   1 & 1 & 1
   \end{pmatrix}
-  \]
-$$ 
+  $$
 - Verify that each vector has the same number of components and report the number of non-zero entries in these vectors.
 
 

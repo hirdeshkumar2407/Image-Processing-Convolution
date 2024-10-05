@@ -1,6 +1,7 @@
 #include <Eigen/Dense>
 #include <Eigen/Sparse>
 #include <unsupported/Eigen/SparseExtra>
+#include <Eigen/IterativeLinearSolvers> 
 #include <cstring>
 #include <iostream>
 #include <sstream>
@@ -31,7 +32,7 @@ tuple<int, int, int, unsigned char *> task1_getImageDimensions(char *input_image
         cerr << "Error: Could not load image " << input_image_path << endl;
         exit(1);
     }
-    cout << "Image loaded: " << width << "x" << height << " with " << channels << " channels." << endl;
+    cout << "Image loaded: " << width << " rows and " << height << " columns with " << channels << " channels." << endl;
     return make_tuple(width, height, channels, image_data);
 }
 
@@ -302,6 +303,29 @@ MatrixXd exportVectorMTXto2DMatrix(const char*  filename, int height, int width)
     return resultmat;
 }
 
+SparseMatrix<double> addIdentityMatrix(SparseMatrix<double> sparseMatrix, int size){
+    SparseMatrix<double> I(size, size);
+    I.setIdentity();
+
+    SparseMatrix<double> result = sparseMatrix + I;
+    return result;
+}
+
+VectorXd iterativeSolverUsingEigen(SparseMatrix<double> A, VectorXd vec){
+    // CG as for symmetric matrices
+    //ConjugateGradient<SparseMatrix<double>, Lower|Upper, DiagonalPreconditioner<double>> cg;
+    ConjugateGradient<SparseMatrix<double>, Lower|Upper, IdentityPreconditioner> cg;
+
+    cg.setTolerance(1e-10);        
+    //cg.setMaxIterations(1000);    
+
+    cg.compute(A);
+    VectorXd y = cg.solve(vec);
+
+    cout << "Iteration count: " << cg.iterations() << endl;
+    cout << "Final residual: " << cg.error() << endl;
+    return y;
+}
 
 // Main function
 int main(int argc, char *argv[])
@@ -364,8 +388,9 @@ int main(int argc, char *argv[])
 
     // -- Task 8 --
     cout << "\n--------TASK 8----------\n";
+    
     task8_exportmatrixes(A2, w);
-    const char *commandtask8 = "mpirun -n 1 ./challenge1 A2.mtx w.mtx x-sol.mtx hist.txt -i bicg -tol 1.0e-9 -p ilu";
+    const char *commandtask8 = "mpirun -n 1 ./iterativesolver A2.mtx w.mtx x-sol.mtx hist.txt -i bicg -tol 1.0e-9 -p ilu";
     system(commandtask8);
 
     // -- Task 9 --
@@ -382,6 +407,18 @@ int main(int argc, char *argv[])
     cout << "\n--------TASK 11----------\n";
     exportimagenotnormalise(image_data, "edge_detection_image", "png", edge_detection_img.first, width, height);
 
+    cout << "\n--------TASK 12----------\n";
+    int size = image_matrix.size();
+    SparseMatrix<double> A3_I = addIdentityMatrix(A3, size);
+    VectorXd y = iterativeSolverUsingEigen(A3_I, w);
+
+    // exportSparseMatrixToMTX(A3_I, "A3_I");
+    // const char *commandtask12 = "mpirun -n 1 ./iterativesolver A3_I.mtx w.mtx y-sol.mtx hist_y.txt -i cg -tol 1.0e-10 -p jacobi";
+    // system(commandtask12);
+
+    cout << "\n--------TASK 13----------\n";
+    MatrixXd matrix_y = Map<MatrixXd>(y.data(), height, width);
+    exportimagenotnormalise(image_data, "y_image", "png", matrix_y, width, height);
 
     // Free the image data after use
     stbi_image_free(image_data);

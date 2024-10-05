@@ -159,15 +159,8 @@ Euclidean norm of v norm: 35576.6
 ```
 ### Task 4: Apply Smoothing Filter
 - Write the convolution operation corresponding to the **smoothing kernel \( H_{\text{av2}} \)**, which is a matrix-vector multiplication between the  A<sub>1</sub> (size mn x mn) image matrix and the kernel.
-- The **smoothing kernel** used is:
-H<sub>av2</sub> = 
-$$ 
-\begin{pmatrix} 
-1 & 1 & 1 \\
-1 & 1 & 1  \\
-1 & 1 & 1  \\
-\end{pmatrix}
-$$ 
+The **smoothing kernel** used is:
+$$ H_{\text{av2}} = \frac{1}{9} \begin{pmatrix} 1 & 1 & 1 \\ 1 & 1 & 1 \\ 1 & 1 & 1 \end{pmatrix} $$
 - Verify that each vector has the same number of components and report the number of non-zero entries in these vectors.
 
 
@@ -186,7 +179,7 @@ image created: results/smoothed_noisy.png
 
 ### Task 6: Apply Sharpening Filter
 - Write the convolution operation corresponding to the **sharpening kernel \( H_{\text{sh31}} \)**, which is a matrix-vector multiplication between the A<sub>2</sub> (size mn x mn)image matrix and the kernel.
-- The **sharpening kernel** used is:
+The **sharpening kernel** used is:
 $$
 H_{\text{sh31}} = \begin{pmatrix}
 0 & -1 & 0 \\
@@ -252,7 +245,7 @@ image created: results/x_image.png
 ```
 ### Task 10: Edge Detection
 - Apply edge detection to the image using the **Laplacian kernel \( H_{\text{app}} \)** on image matrix A<sub>3</sub> having size mn x mn.
-- The **Laplacian kernel** used for edge detection is:
+The **Laplacian kernel** used for edge detection is:
 $$
 H_{\text{app}} = \begin{pmatrix}
 0 & -1 & 0 \\
@@ -276,20 +269,25 @@ Matrix A3 is symmetric
 image created: results/edge_detection_image.png
 ```
 
-### Task 11: Iterative Solver with Identity Matrix
+### Task 12: Iterative Solver with Identity Matrix
 - Using a suitable iterative solver available in **Eigen**, compute the approximate solution of the linear system \( (I + A_3)y = w \), where \( I \) denotes the identity matrix, prescribing a tolerance of \( 10^{-10} \).
 - Report the iteration count and final residual.
 ###### Output:
 ```
+--------TASK 12----------
+Iteration count: 32
+Final residual: 7.54005e-11
 ```
 
-### Task 12: Final Image Conversion
+### Task 13: Final Image Conversion
 - Convert the image stored in the vector \( y \) into a `.png` image and upload it.
 ###### Output:
 ```
+--------TASK 13----------
+image created: results/y_image.png
 ```
 
-### Task 13: Comment on the obtained results.
+### Task 14: Comment on the obtained results.
 - Final comments
 ###### Output:
 ```

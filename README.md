@@ -21,7 +21,7 @@ Let’s walk through an example of convolution using a 5x5 image matrix and a 2x
 
 ### Step 1: Image Matrix \( F \)
 The original grayscale image is represented as a 5x5 matrix \( F \), where each number corresponds to a pixel's intensity.
-
+$$ 
 \[
 F = \begin{pmatrix}
 1 & 2 & 3 & 0 & 1 \\
@@ -31,22 +31,23 @@ F = \begin{pmatrix}
 1 & 0 & 1 & 2 & 3
 \end{pmatrix}
 \]
-
+$$ 
 ### Step 2: Kernel Matrix \( H \)
 A kernel matrix (2x2 in this example) defines the filter being applied to the image.
-
+$$ 
 \[
 H = \begin{pmatrix}
 1 & 0 \\
 0 & -1
 \end{pmatrix}
 \]
+$$ 
 
 ### Step 3: Convolution Operation
 The kernel slides over the image matrix, starting from the top-left corner, performing element-wise multiplication, and summing the results.
 
 For the top-left corner of the image:
-
+$$ 
 \[
 \begin{pmatrix}
 1 & 2 \\
@@ -58,9 +59,9 @@ H = \begin{pmatrix}
 0 & -1
 \end{pmatrix}
 \]
-
+$$ 
 Element-wise multiplication:
-
+$$ 
 \[
 \begin{pmatrix}
 1 \cdot 1 & 2 \cdot 0 \\
@@ -71,14 +72,14 @@ Element-wise multiplication:
 0 & -5
 \end{pmatrix}
 \]
-
-Summing the results gives \( 1 + 0 + 0 - 5 = -4 \).
+$$ 
+Summing the results gives $$  \( 1 + 0 + 0 - 5 = -4 \)$$ .
 
 This process is repeated for each position, sliding the kernel across the image.
 
 ### Step 4: Output Matrix \( G \)
 The resulting filtered image (output matrix) is smaller due to the convolution process. Here’s an example output matrix:
-
+$$ 
 \[
 G = \begin{pmatrix}
 -4 & -4 & -3 & 5 \\
@@ -87,7 +88,7 @@ G = \begin{pmatrix}
 0 & 2 & 1 & 1
 \end{pmatrix}
 \]
-
+$$ 
 ---
 
 ## 3. Why Numerical Linear Algebra?
@@ -159,7 +160,7 @@ Euclidean norm of v norm: 35576.6
 ### Task 4: Apply Smoothing Filter
 - Write the convolution operation corresponding to the **smoothing kernel \( H_{\text{av2}} \)**, which is a matrix-vector multiplication between the  A<sub>1</sub> (size mn x mn) image matrix and the kernel.
 - The **smoothing kernel** used is:
-
+$$ 
   \[
   H_{\text{av2}} = \frac{1}{9} \begin{pmatrix}
   1 & 1 & 1 \\
@@ -167,6 +168,7 @@ Euclidean norm of v norm: 35576.6
   1 & 1 & 1
   \end{pmatrix}
   \]
+$$ 
 - Verify that each vector has the same number of components and report the number of non-zero entries in these vectors.
 
 
@@ -186,7 +188,7 @@ image created: results/smoothed_noisy.png
 ### Task 6: Apply Sharpening Filter
 - Write the convolution operation corresponding to the **sharpening kernel \( H_{\text{sh31}} \)**, which is a matrix-vector multiplication between the A<sub>2</sub> (size mn x mn)image matrix and the kernel.
 - The **sharpening kernel** used is:
-
+$$ 
   \[
   H_{\text{sh31}} = \begin{pmatrix}
   0 & -1 & 0 \\
@@ -194,7 +196,7 @@ image created: results/smoothed_noisy.png
   0 & -1 & 0
   \end{pmatrix}
   \]
-
+$$ 
 
 - Report the number  A<sub>2</sub>  of non-zero entries in the matrix 
 - Is A<sub>2</sub> symmetric?
@@ -254,7 +256,7 @@ image created: results/x_image.png
 ### Task 10: Edge Detection
 - Apply edge detection to the image using the **Laplacian kernel \( H_{\text{app}} \)** on image matrix A<sub>3</sub> having size mn x mn.
 - The **Laplacian kernel** used for edge detection is:
-
+$$ 
   \[
   H_{\text{app}} = \begin{pmatrix}
   0 & -1 & 0 \\
@@ -262,6 +264,7 @@ image created: results/x_image.png
   0 & -1 & 0
   \end{pmatrix}
   \]
+$$ 
 - Is A<sub>3</sub>  symmetric ?
 ###### Output:
 ```

@@ -320,11 +320,11 @@ This project has significantly enhanced our understanding of **numerical methods
 
 
 ## Contributors 
-[Hirdesh Kumar](https://github.com/hirdeshkumar2407)
+[Hirdesh Kumar](https://www.linkedin.com/in/hirdeshkumar2407/)
 
-[Nadah Khaled](https://github.com/nadahkhaledd)
+[Nadah Khaled](https://www.linkedin.com/in/nadahkhaledd10/)
 
-[Milica Sanjevic](https://github.com/milicasanjevic)
+[Milica Sanjevic](https://www.linkedin.com/in/milica-sanjevic-321392327/)
 
 
 

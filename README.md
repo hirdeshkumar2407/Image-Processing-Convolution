@@ -132,9 +132,11 @@ This project implements several image processing tasks using convolution operati
 --------TASK 1----------
 Image loaded: 256x341 with 1 channels.
 ```
+![Original Image](code/Albert_Einstein-256px.jpg)
 ### Task 2: Add Noise to the Image
 - Introduce a noise signal to the loaded image by adding random fluctuations to each pixel, ranging between [-50, 50].
 - Export the resulting image in `.png` format and upload it.
+
 
 ###### Output:
 ```
@@ -142,7 +144,7 @@ Image loaded: 256x341 with 1 channels.
 image created: results/noisy_image.png
 
 ```
-
+![Original Image](code/results/noisy_image.png)
 ### Task 3 Reshape Image as Vectors
 - Reshape the original and noisy images into two vectors, \( v \) and \( w \), respectively. 
 - Verify each vector should have \( m \times n \) components.
@@ -160,16 +162,8 @@ Euclidean norm of v norm: 35576.6
 ### Task 4: Apply Smoothing Filter
 
 The **smoothing kernel** used is:
----
-$$ 
-G = \begin{pmatrix}
--4 & -4 & -3 & 5 \\
--2 & -2 & -5 & 0 \\
-3 & 4 & -1 & -1 \\
-0 & 2 & 1 & 1
-\end{pmatrix}
-$$ 
----
+
+![Original Image](question/k1.png)
 
 
 - Write the convolution operation corresponding to the **smoothing kernel \( H_{\text{av2}} \)**, which is a matrix-vector multiplication between the  A<sub>1</sub> (size mn x mn) image matrix and the kernel.
@@ -183,21 +177,17 @@ Number of non-zero entries in A1: 782086
 ```
 
 ### Task 5: Export Smoothing Filter Image
-- Apply this smoothing filter to the original image  A<sub>1</sub> \( w \)  and export the resulting image. 
+- Apply this smoothing filter to the noisy l image  A<sub>1</sub> \( w \)  and export the resulting image. 
 ###### Output:
 ```--------TASK 5----------
 image created: results/smoothed_noisy.png
 ```
-
+![Original Image](code/results/smoothed_noisy.png)
 ### Task 6: Apply Sharpening Filter
-- Write the convolution operation corresponding to the **sharpening kernel \( H_{\text{sh31}} \)**, which is a matrix-vector multiplication between the A<sub>2</sub> (size mn x mn)image matrix and the kernel.
+- Write the convolution operation corresponding to the **sharpening kernel \( H_{\text{sh2}} \)**, which is a matrix-vector multiplication between the A<sub>2</sub> (size mn x mn)image matrix and the kernel.
 The **sharpening kernel** used is:
-$$
-H_{\text{sh31}} = \begin{pmatrix}
-0 & -1 & 0 \\
--1 & 5 & -1 \\
-0 & -1 & 0
-\end{pmatrix}$$
+
+![sharpening kernel](question/k2.png)
 
 
 - Report the number  A<sub>2</sub>  of non-zero entries in the matrix 
@@ -216,7 +206,7 @@ Matrix A2 is not symmetric
 --------TASK 7----------
 image created: results/sharpened_orignal_image.png
 ```
-
+![Original Image](code/results/sharpened_image.png)
 ### Task 8: Solving Linear Systems for Image Processing
 - Export the Eigen matrix \( A_2 \) and vector \( w \) into the `.mtx` format.
 - Using a suitable iterative solver and preconditioner from the **LIS** library, compute the approximate solution to the system \( A_2 x = w \), with a prescribed tolerance of \( 10^{-9} \).
@@ -255,16 +245,13 @@ BiCG: relative residual    = 6.115310e-10
 ```--------TASK 9----------
 image created: results/x_image.png
 ```
+![Original Image](code/results/x_image.png)
 ### Task 10: Edge Detection
-- Apply edge detection to the image using the **Laplacian kernel \( H_{\text{app}} \)** on image matrix A<sub>3</sub> having size mn x mn.
+- Apply edge detection to the image using the **Laplacian kernel \( H_{\text{lap}} \)** on image matrix A<sub>3</sub> having size mn x mn.
 The **Laplacian kernel** used for edge detection is:
-$$
-H_{\text{app}} = \begin{pmatrix}
-0 & -1 & 0 \\
--1 & 4 & -1 \\
-0 & -1 & 0
-\end{pmatrix}
-$$
+
+
+![lap](question/k3.png)
 
 - Is A<sub>3</sub>  symmetric ?
 ###### Output:
@@ -280,6 +267,8 @@ Matrix A3 is symmetric
 --------TASK 11----------
 image created: results/edge_detection_image.png
 ```
+
+![Original Image](code/results/edge_detection_image.png)
 
 ### Task 12: Iterative Solver with Identity Matrix
 - Using a suitable iterative solver available in **Eigen**, compute the approximate solution of the linear system \( (I + A_3)y = w \), where \( I \) denotes the identity matrix, prescribing a tolerance of \( 10^{-10} \).
@@ -298,28 +287,18 @@ Final residual: 7.54005e-11
 --------TASK 13----------
 image created: results/y_image.png
 ```
+![Original Image](code/results/y_image.png)
 
 ### Task 14: Comment on the obtained results.
-- Final comments
-###### Output:
-```
-```
+
 ## Convolution with Filters
 
 Here our filters modify the image during the convolution process:
 
-- **Original Image**
-![Original Image](code/Albert_Einstein-256px.jpg)
-- **Noisy Image**
-![Noisy Image](code/results/noisy_image.png)
-- **Smoothing Filter Applied**
-![Smooth Image](code/results/smoothed_noisy.png)
-- **Sharpening Filter Applied**
-![Sharpening Image](code/results/smoothed_noisy.png)
-- **Edge Detection Filter Applied**
-![Edge Detection](code/results/edge_detection_image.png)
-- **x Image**
-![x image](code/results/x_image.png)
+![Original Image](question/kn.png)
+
+
+
 
 ---
 
@@ -330,7 +309,7 @@ This project demonstrates how image processing tasks such as **smoothing**, **sh
 ---
 ## Acknowledgements
 
-This was challenge  was assigned as part of the course **Numerical Linear Algebra in High-Performance Computing (2024/25)** at **Politecnico di Milano**. We extend our sincere gratitude to:
+This was challenge 1 was assigned as part of the course **Numerical Linear Algebra in High-Performance Computing (2024/25)** at **Politecnico di Milano**. We extend our sincere gratitude to:
 
 - **Professor [P. F. Antonietti](https://www.linkedin.com/in/paolaantonietti/?lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3BtoYfzDyNQUuaYhVlXkVXMQ%3D%3D)**, for providing excellent guidance throughout the course.
 - **Teaching Assistant [Dott. M. Botti](https://www.linkedin.com/in/michele-botti-4707a62a2/?lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3BFvI80B0lRXiNyhRyRoR13Q%3D%3D)**, for their support and valuable feedback on this project.

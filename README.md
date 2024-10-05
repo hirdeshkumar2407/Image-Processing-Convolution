@@ -161,13 +161,14 @@ Euclidean norm of v norm: 35576.6
 
 The **smoothing kernel** used is:
 ---
-$$
-H_{\text{av2}} = \frac{1}{9} \begin{pmatrix}
-1 & 1 & 1 \\
-1 & 1 & 1 \\
-1 & 1 & 1
+$$ 
+G = \begin{pmatrix}
+-4 & -4 & -3 & 5 \\
+-2 & -2 & -5 & 0 \\
+3 & 4 & -1 & -1 \\
+0 & 2 & 1 & 1
 \end{pmatrix}
-$$
+$$ 
 ---
 
 

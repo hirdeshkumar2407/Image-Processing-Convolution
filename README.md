@@ -222,20 +222,20 @@ matrix size = 87296 x 87296 (435286 nonzero entries)
 
 initial vector x      : all components set to 0
 precision             : double
-linear solver         : BiCG
+linear solver         : BiCGSTAB
 preconditioner        : ILU(0)
 convergence condition : ||b-Ax||_2 <= 1.0e-09 * ||b-Ax_0||_2
 matrix storage format : CSR
 linear solver status  : normal end
 
-BiCG: number of iterations = 26
-BiCG:   double             = 26
-BiCG:   quad               = 0
-BiCG: elapsed time         = 2.721242e-01 sec.
-BiCG:   preconditioner     = 1.962312e-01 sec.
-BiCG:     matrix creation  = 6.710000e-07 sec.
-BiCG:   linear solver      = 7.589297e-02 sec.
-BiCG: relative residual    = 6.115310e-10
+BiCGSTAB: number of iterations = 13
+BiCGSTAB:   double             = 13
+BiCGSTAB:   quad               = 0
+BiCGSTAB: elapsed time         = 1.266133e-01 sec.
+BiCGSTAB:   preconditioner     = 8.972816e-02 sec.
+BiCGSTAB:     matrix creation  = 5.610000e-07 sec.
+BiCGSTAB:   linear solver      = 3.688515e-02 sec.
+BiCGSTAB: relative residual    = 8.522644e-10
 ```
 
 
@@ -276,8 +276,8 @@ image created: results/edge_detection_image.png
 ###### Output:
 ```
 --------TASK 12----------
-Iteration count: 32
-Final residual: 7.54005e-11
+Iteration count: 23
+Final residual: 8.2084e-11
 ```
 
 ### Task 13: Final Image Conversion

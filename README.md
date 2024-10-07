@@ -289,8 +289,6 @@ image created: results/y_image.png
 ```
 ![Original Image](code/results/y_image.png)
 
-### Task 14: Comment on the obtained results.
-
 ## Convolution with Filters
 
 Here our filters modify the image during the convolution process:

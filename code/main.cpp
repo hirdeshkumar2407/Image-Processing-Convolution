@@ -312,19 +312,7 @@ SparseMatrix<double> addIdentityMatrix(SparseMatrix<double> sparseMatrix, int si
 }
 
 VectorXd iterativeSolverUsingEigen(SparseMatrix<double> A, VectorXd vec){
-   /*
-    // CG as for symmetric matrices
-    ConjugateGradient<SparseMatrix<double>, Lower|Upper, IdentityPreconditioner> cg;
-
-    cg.setTolerance(1e-10);        
-    //cg.setMaxIterations(1000);    
-
-    cg.compute(A);
-    VectorXd y = cg.solve(vec);
-
-    cout << "Iteration count: " << cg.iterations() << endl;
-    cout << "Final residual: " << cg.error() << endl;
-    return y;*/
+  
 
 
 // Use BiCGSTAB instead of Conjugate Gradient for non-symmetric matrices
@@ -404,8 +392,7 @@ int main(int argc, char *argv[])
     cout << "\n--------TASK 8----------\n";
     
     task8_exportmatrixes(A2, w);
-    
-    // const char *commandtask8 = "mpirun -n 1 ./iterativesolver A2.mtx w.mtx x-sol.mtx hist.txt -i bicg -tol 1.0e-9 -p ilu";
+
     const char *commandtask8 ="mpirun -n 1 ./iterativesolver A2.mtx w.mtx x-sol.mtx hist.txt -i bicgstab -tol 1.0e-9 -p ilu";
     system(commandtask8);
 
@@ -428,9 +415,6 @@ int main(int argc, char *argv[])
     SparseMatrix<double> A3_I = addIdentityMatrix(A3, size);
     VectorXd y = iterativeSolverUsingEigen(A3_I, w);
 
-    // exportSparseMatrixToMTX(A3_I, "A3_I");
-    // const char *commandtask12 = "mpirun -n 1 ./iterativesolver A3_I.mtx w.mtx y-sol.mtx hist_y.txt -i cg -tol 1.0e-10 -p jacobi";
-    // system(commandtask12);
 
     cout << "\n--------TASK 13----------\n";
     MatrixXd matrix_y = Map<MatrixXd>(y.data(), height, width);

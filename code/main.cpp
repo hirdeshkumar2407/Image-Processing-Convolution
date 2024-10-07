@@ -122,72 +122,12 @@ SparseMatrix<double> populateSparseMatrix(int image_size, Matrix3d smoothing_mat
     return sp_matrix;
 }
 
-// MatrixXd normalizeMatrix(MatrixXd& matrix) {
-//     double minValue = 0.0;
-//     double maxValue = 255.0;
-//     int rows = matrix.rows();
-//     int cols = matrix.cols();
-    
-//     for (int i = 0; i < rows; ++i)
-//     {
-//         for (int j = 0; j < cols; ++j)
-//         {
-//             double value = matrix(i, j);
-//             // Clamp the value to the range [minValue, maxValue]
-//             if (value < minValue)
-//             {
-//                 matrix(i, j) = minValue;
-//             }
-//             else if (value > maxValue)
-//             {
-//                 matrix(i, j) = maxValue;
-//             }
-//         }
-//     }
-//     return matrix;
-// }
-
-// SparseMatrix<double> normalizeSparseMatrix(SparseMatrix<double>& sparseMatrix) {
-//     for (int k = 0; k < sparseMatrix.outerSize(); ++k) {
-//         for (SparseMatrix<double>::InnerIterator it(sparseMatrix, k); it; ++it) {
-//             // Access the current non-zero element
-//             double value = it.value();
-
-//             if (value < 0) {
-//                sparseMatrix.coeffRef(it.row(), it.col()) = 0;
-//             }
-//             else if (value > 255) {
-//                 sparseMatrix.coeffRef(it.row(), it.col()) = 255;
-//             }
-
-//         }
-//     }
-//     return sparseMatrix;
-// }
-
-
 MatrixXd spMatrixVectorMultiplication(const SparseMatrix<double> &sp_matrix, const VectorXd &vec, int width, int height)
 {
     VectorXd result = sp_matrix * vec;
     MatrixXd resultmat = Map<MatrixXd>(result.data(), height, width);
     return resultmat;
 }
-
-// pair<MatrixXd, SparseMatrix<double>> task4_imageSmoothing(MatrixXd image_matrix, Matrix3d smoothing_matrix, int width, int height)
-// {
-//     cout << "\n--------TASK 4----------\n";
-//     int image_size = image_matrix.size();
-
-//     //  sparse matrix multiplication requires the image to be treated as a 1D vector
-//     VectorXd flattened_image = convertMatrixToVector(image_matrix);
-
-//     SparseMatrix<double> A1 = populateSparseMatrix(image_size, smoothing_matrix, width, height);
-//     cout << "Number of non-zero entries in A1: " << A1.nonZeros() << endl;
-
-//     MatrixXd result = spMatrixVectorMultiplication(A1, flattened_image, width, height);
-//     //cout << "smoothed image size: " << result.rows() << "x" << result.cols() << endl;
-//     return make_pair(result, A1);
-// }
 
 bool isSymmetric(const SparseMatrix<double>& matrix) {
     if (matrix.rows() != matrix.cols()) {
@@ -278,7 +218,6 @@ VectorXd loadVectorFromMTX(const string &filename) {
     string line;
     getline(file, line); // Skip the first line (MatrixMarket header)
 
-    // Read the number of entries
     int numEntries;
     file >> numEntries;
 
@@ -312,21 +251,17 @@ SparseMatrix<double> addIdentityMatrix(SparseMatrix<double> sparseMatrix, int si
 }
 
 VectorXd iterativeSolverUsingEigen(SparseMatrix<double> A, VectorXd vec){
-  
+    // Use BiCGSTAB instead of Conjugate Gradient for non-symmetric matrices
+    BiCGSTAB<SparseMatrix<double>, IdentityPreconditioner> bicgstab;
 
+    bicgstab.setTolerance(1e-10);
 
-// Use BiCGSTAB instead of Conjugate Gradient for non-symmetric matrices
-BiCGSTAB<SparseMatrix<double>, IdentityPreconditioner> bicgstab;
+    bicgstab.compute(A);
+    VectorXd y = bicgstab.solve(vec);
 
-bicgstab.setTolerance(1e-10);        
-//bicgstab.setMaxIterations(1000);    // Uncomment if you want to limit the number of iterations
-
-bicgstab.compute(A);  // A is your sparse matrix
-VectorXd y = bicgstab.solve(vec);  // vec is the vector you want to solve for
-
-cout << "Iteration count: " << bicgstab.iterations() << endl;
-cout << "Final residual: " << bicgstab.error() << endl;
-return y;
+    cout << "Iteration count: " << bicgstab.iterations() << endl;
+    cout << "Final residual: " << bicgstab.error() << endl;
+    return y;
 }
 
 // Main function
@@ -390,7 +325,6 @@ int main(int argc, char *argv[])
 
     // -- Task 8 --
     cout << "\n--------TASK 8----------\n";
-    
     task8_exportmatrixes(A2, w);
 
     const char *commandtask8 ="mpirun -n 1 ./iterativesolver A2.mtx w.mtx x-sol.mtx hist.txt -i bicgstab -tol 1.0e-9 -p ilu";

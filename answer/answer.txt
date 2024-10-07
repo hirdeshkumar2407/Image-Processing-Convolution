@@ -1,0 +1,45 @@
+--------TASK 1----------
+Image loaded: 256 rows and 341 columns with 1 channels.
+
+--------TASK 2----------
+noisy_image.png
+
+--------TASK 3----------
+Euclidean norm of v norm: 35576.6
+
+--------TASK 4----------
+Non-zero entries in A1: 782086
+
+--------TASK 5----------
+smoothed_noisy.png
+
+
+--------TASK 6----------
+Non-zero entries in A2: 435286
+A2 is not symmetric
+
+
+--------TASK 7----------
+sharpened_image.png
+
+--------TASK 8----------
+BiCGSTAB
+number of iterations = 13
+relative residual    = 8.522644e-10
+
+--------TASK 9----------
+x_image.png
+
+--------TASK 10----------
+A3 is symmetric
+
+--------TASK 11----------
+edge_detection_image.png
+
+
+--------TASK 12----------
+Iteration count: 23
+Final residual: 8.2084e-11
+
+--------TASK 13----------
+/y_image.png

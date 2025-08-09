@@ -1,8 +1,24 @@
-# Image Processing, Convolution, and C++ Implementation with Eigen
+# 🖼️ High-Performance Image Processing with C++ & Eigen
+## 🎯 Project Mission 
+This project explores the powerful intersection of numerical linear algebra and digital image processing. Our mission, for the "Numerical Linear Algebra" course at Politecnico di Milano, was to move beyond theory and implement a high-performance C++ solution from first principles to perform real-world tasks like image filtering and denoising.
 
-## Project Overview
+This project was a practical demonstration of turning complex mathematical theory into efficient, visible, and high-performance results.
 
-This project demonstrates the implementation of image filtering and denoising through **convolution** operations using **C++** and the **Eigen** library. The focus is on applying filters to a grayscale image to perform tasks such as **smoothing**, **sharpening**, and **edge detection**, while also solving linear systems related to image processing.
+## 🤝 The Team
+This project's success was a result of a talented and collaborative team effort, with invaluable guidance from our teaching staff.
+
+## Contributors:
+
+- [Hirdesh Kumar](https://www.linkedin.com/in/hirdeshkumar2407/)
+
+- [Nadah Khaled](https://www.linkedin.com/in/nadahkhaledd10/)
+
+- [Milica Sanjevic](https://www.linkedin.com/in/milica-sanjevic-321392327/)
+
+## Guidance:
+- **Professor [P. F. Antonietti](https://www.linkedin.com/in/paolaantonietti/?lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3BtoYfzDyNQUuaYhVlXkVXMQ%3D%3D)**
+
+- **Teaching Assistant [Dott. M. Botti](https://www.linkedin.com/in/michele-botti-4707a62a2/?lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3BFvI80B0lRXiNyhRyRoR13Q%3D%3D)**
 
 ---
 

@@ -321,24 +321,5 @@ Here our filters modify the image during the convolution process:
 This project demonstrates how image processing tasks such as **smoothing**, **sharpening**, and **edge detection** can be effectively implemented using convolution operations and linear algebra methods. The **Eigen** library in C++ provides an efficient way to handle matrix operations and solve linear systems, crucial for real-time image processing applications.
 
 ---
-## Acknowledgements
-
-This was challenge 1 assigned as part of the course **Numerical Linear Algebra in High-Performance Computing (2024/25)** at **Politecnico di Milano**. We extend our sincere gratitude to:
-
-- **Professor [P. F. Antonietti](https://www.linkedin.com/in/paolaantonietti/?lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3BtoYfzDyNQUuaYhVlXkVXMQ%3D%3D)**, for providing excellent guidance throughout the course.
-- **Teaching Assistant [Dott. M. Botti](https://www.linkedin.com/in/michele-botti-4707a62a2/?lipi=urn%3Ali%3Apage%3Ad_flagship3_search_srp_all%3BFvI80B0lRXiNyhRyRoR13Q%3D%3D)**, for their support and valuable feedback on this project.
-
-This project has significantly enhanced our understanding of **numerical methods**, **image processing**, and their applications in **high-performance computing**.
-
-
-
-
-## Contributors 
-[Hirdesh Kumar](https://www.linkedin.com/in/hirdeshkumar2407/)
-
-[Nadah Khaled](https://www.linkedin.com/in/nadahkhaledd10/)
-
-[Milica Sanjevic](https://www.linkedin.com/in/milica-sanjevic-321392327/)
-
 
 
